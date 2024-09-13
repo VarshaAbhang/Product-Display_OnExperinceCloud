@@ -1,0 +1,26 @@
+<template>
+    <div class="slds-grid slds-wrap slds-p-around_medium">
+        <!-- Item Family Dropdown -->
+        <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+            <lightning-combobox
+                name="itemFamily"
+                label="Item Family"
+                value={selectedItemFamily}
+                placeholder="Select Item Family"
+                options={itemFamilyOptions}
+                onchange={handleItemFamilyChange}>
+            </lightning-combobox>
+        </div>
+
+        <!-- Item Category Dropdown -->
+        <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+            <lightning-combobox
+                name="itemCategory"
+                label="Item Category"
+                value={selectedItemCategory}
+                placeholder="Select Item Category"
+                options={filteredItemCategoryOptions}>
+            </lightning-combobox>
+        </div>
+    </div>
+</template>
