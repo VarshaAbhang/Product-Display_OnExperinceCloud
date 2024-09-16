@@ -19,8 +19,21 @@
                 label="Item Category"
                 value={selectedItemCategory}
                 placeholder="Select Item Category"
-                options={filteredItemCategoryOptions}>
+                options={filteredItemCategoryOptions}
+                onchange={handleItemCategoryChange}>
             </lightning-combobox>
         </div>
+
+        <!-- Display Images -->
+        <template if:true={images}>
+                <template for:each={images} for:item="imageUrl">
+                    <div key={imageUrl}>
+                        <img src={imageUrl} alt="Drawing Image" class="custom-image"/>
+                    </div>
+                </template>
+        </template>
+        <template if:false={images.length}>
+            <div>No drawings found...</div>
+        </template>
     </div>
 </template>
