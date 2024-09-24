@@ -21,7 +21,7 @@ export default class ProductImageDisplay extends LightningElement {
     itemFamilyPicklist({ data, error }) {
         if (data) {
             this.itemFamilyOptions = data.values.map(item => ({ label: item.label, value: item.value }));
-            //this.loadImages();
+            this.loadImages();
         } else if (error) {
             console.error('Error fetching Item Family picklist values:', error);
         }
