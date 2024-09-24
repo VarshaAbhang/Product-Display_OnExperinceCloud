@@ -25,15 +25,25 @@
         </div>
 
         <!-- Display Images -->
-        <template if:true={images}>
-                <template for:each={images} for:item="imageUrl">
-                    <div key={imageUrl}>
-                        <img src={imageUrl} class="custom-image"/>
+        <template if:true={drawings}>
+            <template for:each={drawings} for:item="drawing">
+                <template if:true={drawing.imageUrl}>
+                    <div key={drawing.imageUrl} class="slds-p-around_small">
+                        <img src={drawing.imageUrl} class="custom-image"/>
+                        <div class="slds-text-heading_medium slds-m-top_small">{drawing.code}</div>
+                        <ul class="slds-m-top_x-small">
+                            <template for:each={drawing.features} for:item="feature">
+                                <li key={feature} class="slds-text-body_regular">{feature}</li>
+                            </template>
+                        </ul>
                     </div>
                 </template>
+            </template>
         </template>
-        <template if:false={images.length}>
+        
+        <template if:false={drawings.length}>
             <div>No drawings found...</div>
         </template>
+        
     </div>
 </template>

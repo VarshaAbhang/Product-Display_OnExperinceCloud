@@ -11,7 +11,7 @@ export default class ProductImageDisplay extends LightningElement {
     @track filteredItemCategoryOptions = [];
     @track selectedItemFamily;
     @track selectedItemCategory;
-    @track images = [];
+    @track drawings = [];
 
     @wire(getObjectInfo, { objectApiName: DRAWING_OBJECT })
     drawingObjectInfo;
@@ -39,17 +39,29 @@ export default class ProductImageDisplay extends LightningElement {
     loadImages() {
         fetchDrawings('', '')
             .then(result => {
-                this.images = result.map(drawing => drawing.Drawing_Image__c);
+                this.drawings = result.map(drawing => {
+                    return {
+                        imageUrl: drawing.Drawing_Image__c,
+                        code: drawing.Code__c,
+                        features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+                    };
+                });
             })
             .catch(error => {
                 console.error('Error fetching all drawings:', error);
             });
     }
-
+    
     @wire(fetchDrawings, { itemFamily: '$selectedItemFamily', itemCategory: '$selectedItemCategory' })
     wiredDrawings({ data, error }) {
         if (data) {
-            this.images = data.map(drawing => drawing.Drawing_Image__c);
+            this.drawings = data.map(drawing => {
+                return {
+                    imageUrl: drawing.Drawing_Image__c,
+                    code: drawing.Code__c,
+                    features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+                };
+            });
         } else if (error) {
             console.error('Error fetching drawings with images:', error);
         }
@@ -60,7 +72,7 @@ export default class ProductImageDisplay extends LightningElement {
         this.selectedItemCategory = null;
         this.filteredItemCategoryOptions = [];
 
-     
+
         if (this.itemCategoryOptions.controllerValues) {
             const key = this.itemCategoryOptions.controllerValues[this.selectedItemFamily];
 
@@ -75,4 +87,14 @@ export default class ProductImageDisplay extends LightningElement {
     handleItemCategoryChange(event) {
         this.selectedItemCategory = event.detail.value;
     }
+
+    // get processedDrawings() {
+    //     return this.drawings.map(drawing => {
+    //         return {
+    //             imageUrl: drawing.Drawing_Image__c,
+    //             code: drawing.Code__c,
+    //             features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+    //         };
+    //     });
+    // }
 }

@@ -1,0 +1,17 @@
+.custom-image {
+    max-width: 100%; /* Ensures the image fits within its container */
+}
+
+.slds-text-heading_medium {
+    font-size: 1.5rem; /* Large text for the code */
+    font-weight: bold; /* Makes the code bold */
+}
+
+ul {
+    list-style-type: disc; /* Standard bullets */
+    margin-left: 20px; /* Adds space before the bullets */
+}
+
+li {
+    margin-bottom: 5px; /* Adds space between bullet points */
+}
