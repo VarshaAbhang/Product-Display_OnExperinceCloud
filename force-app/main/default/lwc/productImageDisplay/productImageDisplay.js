@@ -1,11 +1,12 @@
 import { LightningElement, track, wire } from 'lwc';
-import fetchDrawings from '@salesforce/apex/DrawingController.fetchDrawings';
+import { NavigationMixin } from "lightning/navigation";
 import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
+import fetchDrawings from '@salesforce/apex/DrawingController.fetchDrawings';
 import DRAWING_OBJECT from '@salesforce/schema/Drawing__c'; 
 import ITEM_FAMILY_FIELD from '@salesforce/schema/Drawing__c.Item_Family__c'; 
 import ITEM_CATEGORY_FIELD from '@salesforce/schema/Drawing__c.Item_Category__c'; 
 
-export default class ProductImageDisplay extends LightningElement {
+export default class ProductImageDisplay extends NavigationMixin(LightningElement) {
     @track itemFamilyOptions = [];
     @track itemCategoryOptions = [];
     @track filteredItemCategoryOptions = [];
@@ -41,6 +42,7 @@ export default class ProductImageDisplay extends LightningElement {
             .then(result => {
                 this.drawings = result.map(drawing => {
                     return {
+                        id: drawing.Id, 
                         imageUrl: drawing.Drawing_Image__c,
                         code: drawing.Code__c,
                         features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
@@ -57,6 +59,7 @@ export default class ProductImageDisplay extends LightningElement {
         if (data) {
             this.drawings = data.map(drawing => {
                 return {
+                    id: drawing.Id, 
                     imageUrl: drawing.Drawing_Image__c,
                     code: drawing.Code__c,
                     features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
@@ -88,13 +91,24 @@ export default class ProductImageDisplay extends LightningElement {
         this.selectedItemCategory = event.detail.value;
     }
 
-    // get processedDrawings() {
-    //     return this.drawings.map(drawing => {
-    //         return {
-    //             imageUrl: drawing.Drawing_Image__c,
-    //             code: drawing.Code__c,
-    //             features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
-    //         };
-    //     });
-    // }
+    handleImageClick(event) {
+        const drawingId = event.target.dataset.id; 
+        console.log('Image clicked. Drawing ID:', drawingId);
+    
+        if (drawingId) {
+            this[NavigationMixin.Navigate]({
+                type: 'comm__namedPage',
+                attributes: {
+                    name: 'Drawing_Details__c' 
+                },
+                state: {
+                    drawingId: drawingId 
+                }
+            });
+        } else {
+            console.error('Drawing ID not found');
+        }
+    }
+    
+    
 }
