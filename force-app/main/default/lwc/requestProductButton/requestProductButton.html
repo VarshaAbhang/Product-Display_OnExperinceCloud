@@ -1,0 +1,92 @@
+<template>
+    <div class="component-container slds-p-around_medium">
+        <!-- Main Title -->
+        <h1 class="main-title">Request for Product</h1>
+
+        <!-- Section Titles -->
+        <h2 class="section-title">Product Information</h2>
+
+        <!-- Product Information Inputs -->
+        <lightning-input 
+            class="material-number-input"
+            label="Please enter the 10-digit material number (if available)" 
+            placeholder="Enter here" 
+            value={materialNumber}>
+        </lightning-input>
+
+        <div class="slds-grid slds-grid_align-spread slds-m-top_small">
+            <lightning-input 
+                class="article-name-input"
+                label="Please enter the article name" 
+                placeholder="Enter here" 
+                value={articleName}>
+            </lightning-input>
+
+            <div class="preferred-quantity">
+                <label class="slds-form-element__label">Preferred Quantity</label>
+                <div class="slds-grid slds-grid_align-center">
+                    <lightning-button 
+                        icon-name="utility:dash" 
+                        onclick={decreaseQuantity}
+                        variant="icon-inverse">
+                    </lightning-button>
+                    <span class="slds-m-horizontal_small">{quantity}</span>
+                    <lightning-button 
+                        icon-name="utility:add" 
+                        onclick={increaseQuantity}
+                        variant="icon-inverse">
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Text with Sky Blue Background -->
+        <div class="slds-m-top_small help-text">
+            <lightning-icon class="icon-symbol" icon-name="utility:info" alternative-text="Info" size="small"></lightning-icon>
+            <span class="info-text">
+                If you have no material number or article name to hand, 
+                please provide more information below.
+            </span>
+        </div>
+
+          <!-- Information About Your Machine -->
+    <div class="input-section">
+        <div class="slds-grid slds-grid_align-spread slds-m-top_small">
+            <lightning-button-icon
+                class="icon-symbol"
+                icon-name={buttonIcon}
+                onclick={toggleInputs}
+                alternative-text={buttonText}>
+            </lightning-button-icon>
+            <h3 class="information-title">Information about your machine</h3>
+        </div>
+
+        <template if:true={showMachineInfo}>
+            <lightning-input label="Application" placeholder="Enter here" value={application} class="input-field"></lightning-input>
+            <lightning-input label="Machine Type" placeholder="Enter here" value={machineType} class="input-field"></lightning-input>
+            <lightning-input label="Serial Number" placeholder="Enter here" value={serialNumber} class="input-field"></lightning-input>
+            <lightning-input label="Shaft Diameter" placeholder="Enter here" value={shaftDiameter} class="input-field"></lightning-input>
+            <lightning-input label="Rotation Speed (rpm)" placeholder="Enter here" value={rotationSpeed} class="input-field"></lightning-input>
+            <lightning-input label="Machine TAG" placeholder="Enter here" value={machineTag} class="input-field"></lightning-input>
+            <lightning-input label="Pressure (bar)" placeholder="Enter here" value={pressure} class="input-field"></lightning-input>
+            <lightning-input label="Temperature (°C)" placeholder="Enter here" value={temperature} class="input-field"></lightning-input>
+            <lightning-input label="Medium" placeholder="Enter here" value={medium} class="input-field"></lightning-input>
+        
+            <!-- Abrasive Particles in Medium -->
+            <lightning-radio-group
+                label="Abrasive Particles in Medium"
+                options={radioOptions}
+                value={abrasiveParticles}
+                onchange={handleRadioChange}
+                class="radio-group">
+            </lightning-radio-group>
+        </template>
+        
+    </div>
+
+     <!-- Next Button -->
+        <div class="slds-m-top_large ">
+            <lightning-button class="next-button" label="Next" variant="base" onclick={handleNext}></lightning-button>
+        </div>
+    </div>
+</template>

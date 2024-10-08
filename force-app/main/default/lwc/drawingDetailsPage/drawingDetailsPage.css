@@ -1,0 +1,77 @@
+.custom-image {
+    max-width: 100%;                 /* Ensure the image fits within its container */
+    transition: transform 0.3s ease; /* Smooth transition when scaling */
+    height: auto;                    /* Maintain aspect ratio */
+    display: block;                  /* Prevent extra whitespace below image */
+    margin: 0 auto;                  /* Center the image */
+    object-fit: cover;               /* Ensure the image covers the container */
+}
+
+.custom-image:hover {
+    transform: scale(1.2);           /* zoom the image up to 120% on hover */
+}
+
+.slds-col {
+    overflow: hidden;                /* Ensure the scaled image doesn't overflow outside the container */
+    position: relative;
+}
+
+
+.slds-text-heading_medium {
+    font-size: 1.5rem; /* Large text for the code */
+    font-weight: bold; /* Makes the code bold */
+}
+.slds-text-heading_large {
+    font-size: 2rem; /* Large text for the code */
+    font-weight: bold; /* Makes the code bold */
+}
+
+ul {
+    list-style-type: disc; /* Standard bullets */
+    margin-left: 20px; /* Adds space before the bullets */
+}
+
+li {
+    margin-bottom: 5px; /* Adds space between bullet points */
+}
+.image-container {
+    position: relative;               /* Create a positioning context for absolute elements */
+    display: flex;                   /* Use flexbox for centering */
+    justify-content: center;         /* Center horizontally */
+    align-items: center;             /* Center vertically */
+    height: 300px;                   /* Set a fixed height for the container */
+    width: 100%;                     /* Full width */
+    overflow: hidden;                /* Hide overflow if necessary */
+    margin-bottom: 35px; 
+}
+
+.watermark {
+    color: rgba(128, 128, 128, 0.1); /* Fainter light gray with 10% opacity */
+    text-align: center;
+    font-size: 14rem;                /* Font size */
+    font-weight: bold;               /* Bold font */
+    position: absolute;              /* Absolute positioning */
+    bottom: 5px;                     /* Position from the bottom */
+    z-index: 1;                      /* Watermark behind the image */
+    line-height: 16rem;              /* Increase vertical space */
+    width: 100%;                     /* Full width for centering */
+    pointer-events: none;            /* Prevent interaction with the watermark */
+    padding-bottom: 20px;  
+}
+
+
+.custom-drawing_image {
+    max-width: 100%;                 /* Ensure the image doesn't overflow */
+    max-height: 100%;                /* Maintain aspect ratio */
+    height: auto;                    /* Allow height to adjust */
+    width: auto;                     /* Allow width to adjust */
+    z-index: 2;                      /* Ensure the image is above the watermark */
+    position: relative;              /* Image remains relative */
+    filter: brightness(0.9);         /* Optional: Slightly reduce brightness */
+}
+
+.product-button {
+    background-color: #1798c1 ; /* Sky blue background for the Next button */
+    border: none; /* Remove default border */
+    color: white; /* White text color */
+}

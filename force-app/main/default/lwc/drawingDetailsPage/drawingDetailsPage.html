@@ -1,0 +1,68 @@
+<template>
+    <template if:true={drawings.Id}>
+        <div class="slds-grid slds-wrap slds-p-around_medium">
+            <!-- Left Side: Code Name -->
+            <div class="slds-col slds-size_1-of-2">
+                <div class="slds-text-heading_large">{drawings.code}</div>
+            </div>
+            
+            <!-- Right Side: Request Product Button -->
+            <div class="slds-col slds-size_1-of-2 slds-text-align_right">
+                <lightning-button 
+                    class="product-button"
+                    label="Request Product" 
+                    variant="brand" 
+                    onclick={handleRequestProduct}>
+                </lightning-button>
+            </div>
+        </div>
+        
+        <div class="image-container">
+            <div class="watermark">{drawings.code}</div>
+            <img src={drawings.Drawing_Image__c} class="custom-drawing_image" />
+        </div>
+
+        <div class="slds-grid slds-wrap">
+            <!-- Display Image -->
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small"> 
+                <img src={drawings.Assebly_Drawing__c} class="custom-image" />
+            </div>
+               
+            <!-- Display Advantages -->
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                <div class="slds-text-heading_large slds-m-top_small">{drawings.code}</div> 
+
+                <div class="slds-text-heading_medium slds-m-top_small">Features</div>
+                <ul class="slds-m-top_x-small">
+                    <template for:each={drawings.features} for:item="feature">
+                        <li key={feature} class="slds-text-body_regular">{feature}</li>
+                    </template>
+                </ul>
+                <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
+
+                <div class="slds-text-heading_medium slds-m-top_small">Advantages</div>
+                <ul class="slds-m-top_x-small">
+                    <template for:each={drawings.advantages} for:item="advantage">
+                        <li key={advantage} class="slds-text-body_regular">{advantage}</li>
+                    </template>
+                </ul>
+                <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
+
+                <div class="slds-text-heading_medium slds-m-top_small">Opratings</div>
+                <ul class="slds-m-top_x-small">
+                    <template for:each={drawings.operatings} for:item="operating">
+                        <li key={operating} class="slds-text-body_regular">{operating}</li>
+                    </template>
+                </ul>
+                <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
+
+                <div class="slds-text-heading_medium slds-m-top_small">Materials</div>
+                <ul class="slds-m-top_x-small">
+                    <template for:each={drawings.materials} for:item="material">
+                        <li key={material} class="slds-text-body_regular">{material}</li>
+                    </template>
+                </ul>
+            </div>
+        </div>
+    </template>
+</template>

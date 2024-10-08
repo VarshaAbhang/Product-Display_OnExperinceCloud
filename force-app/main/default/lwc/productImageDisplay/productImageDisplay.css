@@ -1,6 +1,11 @@
 .custom-image {
-    max-width: 100%; /* Ensures the image fits within its container */
+    cursor: pointer;
+    height: 300px;                    /* Fixed height */
+    width: 100%;                      /* Full width of the container */
+    object-fit: cover;                /* Ensures the image covers the container while maintaining aspect ratio */
+    object-position: center;          /* Center the image within the container */
 }
+
 
 .slds-text-heading_medium {
     font-size: 1.5rem; /* Large text for the code */
