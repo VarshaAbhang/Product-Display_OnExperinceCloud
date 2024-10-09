@@ -1,5 +1,7 @@
 <template>
     <div class="component-container slds-p-around_medium">
+        
+        <div if:true={showProductInfo}>
         <!-- Main Title -->
         <h1 class="main-title">Request for Product</h1>
 
@@ -7,19 +9,24 @@
         <h2 class="section-title">Product Information</h2>
 
         <!-- Product Information Inputs -->
-        <lightning-input 
-            class="material-number-input"
-            label="Please enter the 10-digit material number (if available)" 
-            placeholder="Enter here" 
-            value={materialNumber}>
-        </lightning-input>
+            <lightning-input 
+                class="material-number-input"
+                label="Please enter the 10-digit material number (if available)" 
+                placeholder="Enter here" 
+                value={materialNumber} 
+                onchange={handleInputChange}
+                maxlength="10" 
+                data-field="materialNumber">
+            </lightning-input>
 
         <div class="slds-grid slds-grid_align-spread slds-m-top_small">
             <lightning-input 
                 class="article-name-input"
                 label="Please enter the article name" 
                 placeholder="Enter here" 
-                value={articleName}>
+                value={articleName}
+                onchange={handleInputChange} 
+                data-field="articleName">
             </lightning-input>
 
             <div class="preferred-quantity">
@@ -58,35 +65,365 @@
                 onclick={toggleInputs}
                 alternative-text={buttonText}>
             </lightning-button-icon>
-            <h3 class="information-title">Information about your machine</h3>
+            <h3 class="titles">Information about your machine</h3>
         </div>
 
         <template if:true={showMachineInfo}>
-            <lightning-input label="Application" placeholder="Enter here" value={application} class="input-field"></lightning-input>
-            <lightning-input label="Machine Type" placeholder="Enter here" value={machineType} class="input-field"></lightning-input>
-            <lightning-input label="Serial Number" placeholder="Enter here" value={serialNumber} class="input-field"></lightning-input>
-            <lightning-input label="Shaft Diameter" placeholder="Enter here" value={shaftDiameter} class="input-field"></lightning-input>
-            <lightning-input label="Rotation Speed (rpm)" placeholder="Enter here" value={rotationSpeed} class="input-field"></lightning-input>
-            <lightning-input label="Machine TAG" placeholder="Enter here" value={machineTag} class="input-field"></lightning-input>
-            <lightning-input label="Pressure (bar)" placeholder="Enter here" value={pressure} class="input-field"></lightning-input>
-            <lightning-input label="Temperature (°C)" placeholder="Enter here" value={temperature} class="input-field"></lightning-input>
-            <lightning-input label="Medium" placeholder="Enter here" value={medium} class="input-field"></lightning-input>
-        
+            <lightning-input 
+                label="Application" 
+                placeholder="Enter here" 
+                value={application} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="application">
+            </lightning-input>
+            
+            <lightning-input 
+                label="Machine Type" 
+                placeholder="Enter here" 
+                value={machineType} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="machineType">
+            </lightning-input>
+            
+            <lightning-input 
+                label="Serial Number" 
+                placeholder="Enter here" 
+                value={serialNumber} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="serialNumber">
+            </lightning-input>
+            
+            <lightning-input 
+                label="Shaft Diameter" 
+                placeholder="Enter here" 
+                value={shaftDiameter} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="shaftDiameter">
+            </lightning-input>
+            
+            <lightning-input 
+                label="Rotation Speed (rpm)" 
+                placeholder="Enter here" 
+                value={rotationSpeed} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="rotationSpeed">
+            </lightning-input>
+            
+            <lightning-input 
+                label="Machine TAG" 
+                placeholder="Enter here" 
+                value={machineTag} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="machineTag">
+            </lightning-input>
+            
+            <lightning-input 
+                label="Pressure (bar)" 
+                placeholder="Enter here" 
+                value={pressure} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="pressure">
+            </lightning-input>
+            
+            <lightning-input 
+                label="Temperature (°C)" 
+                placeholder="Enter here" 
+                value={temperature} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="temperature">
+            </lightning-input>
+            
+            <lightning-input 
+                label="Medium" 
+                placeholder="Enter here" 
+                value={medium} 
+                class="input-field" 
+                onchange={handleInputChange} 
+                data-field="medium">
+            </lightning-input>
+     
             <!-- Abrasive Particles in Medium -->
+            <label>Abrasive Particles in Medium</label>
             <lightning-radio-group
-                label="Abrasive Particles in Medium"
                 options={radioOptions}
                 value={abrasiveParticles}
                 onchange={handleRadioChange}
                 class="radio-group">
             </lightning-radio-group>
+
+            <!-- In which category do you want to request a product? -->
+            <label>In which category do you want to request a product?</label>
+            <lightning-radio-group
+                options={categoryOptions}
+                value={category}
+                onchange={handleCategoryChange}
+                class="radio-group">
+            </lightning-radio-group>
+
+
+                    <!-- Input Fields for Category Selection -->
+        <template if:true={isMechanicalSeals}>
+            <!-- Mechanical Seals section remains the same -->
+            <h4 class="titles">Supply system</h4>
+            <lightning-input 
+                label="Sealing supply system" 
+                value={SealingsupplysystemInput} 
+                onchange={handleInputChange} 
+                data-category="Mechanical Seals" 
+                data-field="SealingsupplysystemInput">
+            </lightning-input>
+            <lightning-input 
+                label="Plan" 
+                value={planInput} 
+                onchange={handleInputChange} 
+                data-category="Mechanical Seals" 
+                data-field="planInput">
+            </lightning-input>
+            <lightning-combobox
+                label="Operating location of your machine"
+                value={operatingLocationInput}
+                options={operatingLocationOptions}
+                onchange={handleOperatingLocationChange}>
+            </lightning-combobox>
+            <lightning-input 
+                label="Additional information about your supply system" 
+                value={additionalInfoInput} 
+                onchange={handleInputChange} 
+                data-category="Mechanical Seals" 
+                data-field="additionalInfoInput">
+            </lightning-input>
+            <label>Certificates</label>
+            <lightning-checkbox-group
+                options={certificateOptions}
+                value={selectedCertificates}
+                onchange={handleCertificatesChange}>
+            </lightning-checkbox-group>
         </template>
+
+        <template if:true={isPackings}>
+            <h4 class="titles">Additional information</h4>
+            
+            <!-- Application (Flange, cover lid, furnace door,...) - shared with Gaskets -->
+            <lightning-input 
+                label="Application (Flange, cover lid, furnace door, ...)" 
+                placeholder="Enter here"
+                value={applicationInput} 
+                onchange={handleInputChange} 
+                data-category="Packings" 
+                data-field="applicationInput">
+            </lightning-input>
+
+            <!-- Packings-specific fields -->
+            <template if:false={isGaskets}>
+                <lightning-input 
+                    label="Dimensions seal chamber [∅D x ∅d x L]" 
+                    placeholder="Enter here"
+                    value={dimensionsSealChamberInput} 
+                    onchange={handleInputChange} 
+                    data-category="Packings" 
+                    data-field="dimensionsSealChamberInput">
+                </lightning-input>
+
+                <lightning-input 
+                    label="Movement/ RPM/ sliding velocity" 
+                    placeholder="Enter here"
+                    value={movementRPMInput} 
+                    onchange={handleInputChange} 
+                    data-category="Packings" 
+                    data-field="movementRPMInput">
+                </lightning-input>
+
+                <lightning-input 
+                    label="Geometry (e.g. gaps, bearing, ...)" 
+                    placeholder="Enter here"
+                    value={geometryInput} 
+                    onchange={handleInputChange} 
+                    data-category="Packings" 
+                    data-field="geometryInput">
+                </lightning-input>
+            </template>
+        </template>
+
+        <template if:true={isGaskets}>
+            <h4 class="titles">Additional information</h4>
+            
+            <!-- Application (Flange, cover lid, furnace door,...) - shared with Packings -->
+            <lightning-input 
+                label="Application (Flange, cover lid, furnace door, ...)" 
+                placeholder="Enter here"
+                value={applicationInput} 
+                onchange={handleInputChange} 
+                data-category="Gaskets" 
+                data-field="applicationInput">
+            </lightning-input>
+
+            <!-- Gaskets-specific fields -->
+            <lightning-input 
+                label="Geometry (e.g. smooth sealing face, protrusion and recess, tongue and groove, bolt circle, ...)" 
+                placeholder="Enter here"
+                value={gasketgeometryInput} 
+                onchange={handleInputChange} 
+                data-category="Gaskets" 
+                data-field="gasketgeometryInput">
+            </lightning-input>
+
+            <lightning-input 
+                label="Quantity, diameter, material of screws" 
+                placeholder="Enter here"
+                value={screwsInput} 
+                onchange={handleInputChange} 
+                data-category="Gaskets" 
+                data-field="screwsInput">
+            </lightning-input>
+        </template>
+
+
+        <template if:true={isOthers}>
+            <h4 class="titles">Additional information</h4>
+                <lightning-textarea label="Which product do you need?" 
+                        value={othersInput} 
+                        onchange={handleInputChange} 
+                        data-category="Others"
+                        data-field="othersInput">
+                </lightning-textarea>
+        </template>
+    </template>
         
     </div>
-
-     <!-- Next Button -->
-        <div class="slds-m-top_large ">
-            <lightning-button class="next-button" label="Next" variant="base" onclick={handleNext}></lightning-button>
+                <!-- Next Button -->
+        <div class="slds-m-top_large">
+            <lightning-button class="next-button" label="Next" variant="base" onclick={handleNextForProductlData}></lightning-button>
         </div>
     </div>
+
+        
+        <div if:true={showPersonalDataForm}>
+            <!-- Main Title -->
+            <h1 class="main-title">Request for Product</h1>
+
+            <!-- Section Titles -->
+            <h2 class="section-title">Personal data</h2>
+
+            <lightning-combobox 
+                label="Title" 
+                placeholder="Please choose"
+                options={titleOptions}
+                onchange={handleInputChange} 
+                data-field="title">
+            </lightning-combobox>
+
+            <lightning-input 
+                label="First name" 
+                placeholder="Enter here" 
+                onchange={handleInputChange} 
+                data-field="firstName"
+                required>
+            </lightning-input>
+
+            <lightning-input 
+                label="Last name" 
+                placeholder="Enter here" 
+                onchange={handleInputChange} 
+                data-field="lastName"
+                required>
+            </lightning-input>
+
+            <lightning-input 
+                label="Email address" 
+                placeholder="Enter here" 
+                onchange={handleInputChange} 
+                data-field="email"
+                type="email"
+                required>
+            </lightning-input>
+
+            <lightning-input 
+                label="Phone number" 
+                placeholder="Enter here" 
+                onchange={handleInputChange} 
+                data-field="phone"
+                type="tel"
+                required>
+            </lightning-input>
+
+            <lightning-input 
+                label="Customer number" 
+                placeholder="Enter here" 
+                onchange={handleInputChange} 
+                data-field="customerNumber"
+                required>
+            </lightning-input>
+
+            <p>All fields above are required.</p>
+
+            <div class="slds-m-top_large">
+                <lightning-button class="back-button" label="Back" variant="base" onclick={handleBack}></lightning-button>
+            </div>
+
+            <div class="slds-m-top_large">
+                <lightning-button class="next-button" label="Next" variant="base" onclick={handleNextForPersonalData}></lightning-button>
+            </div>
+        </div>
+
+        <div if:true={showFurtherInfo}>
+            <!-- Main Title -->
+            <h1 class="main-title">Request for Product</h1>
+        
+            <!-- Section Titles -->
+            <h2 class="section-title">Further Information</h2>
+        
+            <lightning-textarea label="Your message to us" 
+                                value={msgInput} 
+                                onchange={handleInputChange} 
+                                data-field="msgInput">
+            </lightning-textarea>
+        
+            <lightning-input
+                type="file"
+                label="Attachment"
+                accept="image/png, .zip"
+                onchange={handleInputChange}>
+            </lightning-input>
+        
+            <h2 class="section-title">Privacy</h2>
+            <lightning-input type="checkbox" 
+                             label="I agree to the data policy" 
+                             checked={isAgreedToDataPolicy} 
+                             onchange={handleCheckboxChange} 
+                             data-field="agreeToDataPolicy">
+            </lightning-input>
+            
+            <lightning-input type="checkbox" 
+                             label="I am not a bot" 
+                             checked={isNotABot} 
+                             onchange={handleCheckboxChange} 
+                             data-field="notABot">
+            </lightning-input>
+        
+            <div class="slds-m-top_large">
+                <lightning-button class="back-button" 
+                                 label="Back" 
+                                 variant="base" 
+                                 onclick={handleBackForPersonalData}>
+                </lightning-button>
+
+                <div class="slds-m-top_large">
+                    <lightning-button class="next-button" 
+                                     label="Send Request" 
+                                     variant="base" 
+                                     onclick={handleSendRequest}>
+                    </lightning-button>
+                </div>
+            </div>
+        </div>
+        
+    </div> 
 </template>
