@@ -1,12 +1,12 @@
 import { LightningElement, track } from 'lwc';
-import { NavigationMixin } from 'lightning/navigation';
-//import saveEnquiry from '@salesforce/apex/EnquiryController.saveEnquiry';
+import sendProductRequest from '@salesforce/apex/ProductRequestController.sendProductRequest';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 
-export default class RequestProductButton extends NavigationMixin(LightningElement) {
+export default class RequestProductButton extends LightningElement {
     @track materialNumber = '';
     @track articleName = '';
-    @track quantity = 1;
+    @track preferredQuantity = 1;
 
 
     @track showMachineInfo = false; // Toggle for machine information section
@@ -23,11 +23,11 @@ export default class RequestProductButton extends NavigationMixin(LightningEleme
     @track pressure = '';
     @track temperature = '';
     @track medium = '';
-    @track abrasiveParticles = ''; // Store selected radio option
-    @track category = ''; // Track selected category
+    @track abrasiveParticles = ''; 
+    @track productCategory = ''; 
 
     // For Mechanical Seals
-    @track SealingsupplysystemInput = ''; 
+    @track sealingSupplySystemInput = ''; 
     @track planInput = ''; 
     @track operatingLocationInput = ''; 
     @track additionalInfoInput = ''; 
@@ -51,7 +51,7 @@ export default class RequestProductButton extends NavigationMixin(LightningEleme
         firstName: '',
         lastName: '',
         email: '',
-        phone: '',
+        phoneNumber: '',
         customerNumber: ''
     };
 
@@ -61,18 +61,18 @@ export default class RequestProductButton extends NavigationMixin(LightningEleme
 
     get titleOptions() {
         return [
-            { label: 'Mr.', value: 'Mr' },
-            { label: 'Mrs.', value: 'Mrs' },
-            { label: 'Miss', value: 'Miss' },
-            { label: 'Dr.', value: 'Dr' }
+            { label: 'Mr.', value: 'Mr.' },
+            { label: 'Mrs.', value: 'Mrs.' },
+            { label: 'Miss', value: 'Miss.' },
+            { label: 'Dr.', value: 'Dr.' }
         ];
     }
 
     // Define radio options for abrasive particles in medium (Yes/No)
     get radioOptions() {
         return [
-            { label: 'Yes', value: 'yes' },
-            { label: 'No', value: 'no' }
+            { label: 'Yes', value: 'Yes' },
+            { label: 'No', value: 'No' }
         ];
     }
 
@@ -104,15 +104,15 @@ export default class RequestProductButton extends NavigationMixin(LightningEleme
     }
     
     increaseQuantity() {
-        this.quantity += 1; 
-        console.log ('Quantity : ' +this.quantity);
+        this.preferredQuantity += 1; 
+        console.log ('preferredQuantity : ' +this.preferredQuantity);
     }
 
     decreaseQuantity() {
-        if (this.quantity > 1) {
-            this.quantity -= 1; 
+        if (this.preferredQuantity > 1) {
+            this.preferredQuantity -= 1; 
         }
-        console.log ('Quantity : ' +this.quantity);
+        console.log ('preferredQuantity : ' +this.preferredQuantity);
     }
 
     toggleInputs() {
@@ -122,49 +122,63 @@ export default class RequestProductButton extends NavigationMixin(LightningEleme
     }
 
     handleRadioChange(event) {
-        this.abrasiveParticles = event.detail.value; // Store the selected value
+        this.abrasiveParticles = event.detail.value; 
     }
 
     handleCategoryChange(event) {
-        this.category = event.detail.value; // Update the selected category
+        this.productCategory = event.detail.value; 
     }
 
     handleOperatingLocationChange(event) {
-        this.operatingLocationInput = event.detail.value; // Update operating location
+        this.operatingLocationInput = event.detail.value; 
     }
 
     handleCertificatesChange(event) {
-        this.selectedCertificates = event.detail.value; // Update selected certificates
+        this.selectedCertificates = event.detail.value; 
     }
     
 
     get isMechanicalSeals() {
-        return this.category === 'Mechanical Seals';
+        return this.productCategory === 'Mechanical Seals';
     }
 
     get isPackings() {
-        return this.category === 'Packings';
+        return this.productCategory === 'Packings';
     }
 
     get isGaskets() {
-        return this.category === 'Gaskets';
+        return this.productCategory === 'Gaskets';
     }
 
     get isOthers() {
-        return this.category === 'Others';
+        return this.productCategory === 'Others';
     }
 
     handleInputChange(event) {
         const field = event.target.dataset.field;
-        console.log('Field:', field, 'Value:', event.detail.value);
-        this[field] = event.detail.value; 
+        const value = event.detail.value;
+        console.log('Field:', field, 'Value:', value);
+    
+        // Update formData
+        this.formData = { ...this.formData, [field]: value };
+    
+        // Update materialNumber if the field is materialNumber
+        if (field === 'materialNumber') {
+            this.materialNumber = value;
+        }
     }
+    
+    
     
     handleCheckboxChange(event) {
         const field = event.target.dataset.field; 
         console.log('Checkbox Field:', field, 'Checked:', event.target.checked); 
-        this[field] = event.target.checked; 
+        this.formData = { 
+            ...this.formData, 
+            [field]: event.target.checked 
+        };
     }
+    
     
 
     handleNextForProductlData() {
@@ -188,8 +202,37 @@ export default class RequestProductButton extends NavigationMixin(LightningEleme
         this.showFurtherInfo = false;
     }
 
-    handleSendRequest()
-    {
+    async handleSendRequest(event) {
+        console.log('clicked send request', JSON.stringify(this.formData));
+
+        let requestData = {
+            ...this.formData,
+            materialNumber: this.materialNumber
+        };
         
+        console.log('Request data:', JSON.stringify (requestData));
+
+
+        try {
+            const result = await sendProductRequest(requestData);
+            if (result) {   
+                this.showToast('Success', 'Product request sent successfully!', 'success');
+            } else {
+                this.showToast('Error', 'Failed to send product request.', 'error');
+            }
+        } catch (error) {
+            
+            console.error('Error sending product request:', error);
+            this.showToast('Error', error.body.message || 'An error occurred while sending the request.', 'error');
+        }
+    }
+
+    showToast(title, message, variant) {
+        const evt = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant,
+        });
+        this.dispatchEvent(evt);
     }
 }
