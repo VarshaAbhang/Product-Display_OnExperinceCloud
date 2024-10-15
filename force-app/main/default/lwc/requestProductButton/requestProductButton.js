@@ -4,60 +4,58 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 
 export default class RequestProductButton extends LightningElement {
-    @track materialNumber = '';
-    @track articleName = '';
+
     @track preferredQuantity = 1;
-
-
-    @track showMachineInfo = false; // Toggle for machine information section
-    buttonIcon = 'utility:add'; // Initial icon
-    buttonText = 'Expand'; // Button text
-
-    // Machine information fields
-    @track application = '';
-    @track machineType = '';
-    @track serialNumber = '';
-    @track shaftDiameter = '';
-    @track rotationSpeed = '';
-    @track machineTag = '';
-    @track pressure = '';
-    @track temperature = '';
-    @track medium = '';
-    @track abrasiveParticles = ''; 
-    @track productCategory = ''; 
-
-    // For Mechanical Seals
-    @track sealingSupplySystemInput = ''; 
-    @track planInput = ''; 
-    @track operatingLocationInput = ''; 
-    @track additionalInfoInput = ''; 
     @track selectedCertificates = []; 
-    // for packing
-    @track applicationInput = '';
-    @track dimensionsSealChamberInput = '';
-    @track movementRPMInput = '';
-    @track geometryInput = '';
-    //for Gaskets
-    @track gasketgeometryInput = '';
-    @track screwsInput = '';
-    @track othersInput = '';
+
+    @track showMachineInfo = false; 
+    buttonIcon = 'utility:add'; 
+    buttonText = 'Expand'; 
+    
+    @track isAgreedToDataPolicy = false; 
+    @track isNotABot = false; 
 
     @track showProductInfo = true;
     @track showPersonalDataForm = false
     @track showFurtherInfo = false; 
 
     @track formData = {
+        materialNumber : '',
+        articleName : '',
+        application : '',
+        machineType : '',
+        serialNumber : '',
+        shaftDiameter : '',
+        rotationSpeed : '',
+        machineTag : '',
+        pressure : '',
+        temperature : '',
+        medium : '',
+        abrasiveParticles : '',
+        productCategory : '',
+        sealingSupplySystemInput:'',
+        planInput : '',
+        operatingLocationInput:'',
+        additionalInfoInput:'',
+        //
+        applicationPackaging:'',
+        dimensionsSealChamberInput:'',
+        movementRPMInput:'',
+        geometryInput:'',
+        //
+        gasketgeometryInput:'',
+        screwsInput:'',
+        //
+        othersInput:'',
+        //
         title: '',
         firstName: '',
         lastName: '',
         email: '',
         phoneNumber: '',
-        customerNumber: ''
+        customerNumber: '',
+        msgInput: ''
     };
-
-    @track msgInput = '';
-    @track isAgreedToDataPolicy = false; // For the first checkbox
-    @track isNotABot = false; // For the second checkbox
 
     get titleOptions() {
         return [
@@ -68,15 +66,14 @@ export default class RequestProductButton extends LightningElement {
         ];
     }
 
-    // Define radio options for abrasive particles in medium (Yes/No)
     get radioOptions() {
         return [
-            { label: 'Yes', value: 'Yes' },
-            { label: 'No', value: 'No' }
+            { label: 'Yes', value: 'Yes'},
+            { label: 'No', value: 'No'}
         ];
     }
 
-    get categoryOptions() {
+    get productCategoryOptions() {
         return [
             { label: 'Mechanical Seals', value: 'Mechanical Seals' },
             { label: 'Packings', value: 'Packings' },
@@ -85,7 +82,6 @@ export default class RequestProductButton extends LightningElement {
         ];
     }
 
-    // Dropdown options for operating location
     get operatingLocationOptions() {
         return [
             { label: 'Inside', value: 'Inside' },
@@ -96,10 +92,10 @@ export default class RequestProductButton extends LightningElement {
 
     get certificateOptions() {
         return [
-            { label: 'ATEX Declaration', value: 'atex_declaration' },
-            { label: '2.1 Declaration', value: 'declaration_21' },
-            { label: '2.2 Material Certificate', value: 'material_certificate' },
-            { label: '3.1 Inspection Test Certificate of Raw Material', value: 'inspection_certificate' }
+            { label: 'ATEX Declaration', value: 'ATEX Declaration' },
+            { label: '2.1 Declaration', value: '2.1 Declaration' },
+            { label: '2.2 Material Certificate', value: '2.2 Material Certificate' },
+            { label: '3.1 Inspection Test Certificate of Raw Material', value: '3.1 Inspection Test Certificate of Raw Material' }
         ];
     }
     
@@ -121,66 +117,40 @@ export default class RequestProductButton extends LightningElement {
         this.buttonText = this.showMachineInfo ? 'Collapse' : 'Expand';
     }
 
-    handleRadioChange(event) {
-        this.abrasiveParticles = event.detail.value; 
-    }
-
-    handleCategoryChange(event) {
-        this.productCategory = event.detail.value; 
-    }
-
-    handleOperatingLocationChange(event) {
-        this.operatingLocationInput = event.detail.value; 
-    }
-
-    handleCertificatesChange(event) {
-        this.selectedCertificates = event.detail.value; 
-    }
-    
-
     get isMechanicalSeals() {
-        return this.productCategory === 'Mechanical Seals';
+        return this.formData.productCategory === 'Mechanical Seals';
     }
 
     get isPackings() {
-        return this.productCategory === 'Packings';
+        return this.formData.productCategory === 'Packings';
     }
 
     get isGaskets() {
-        return this.productCategory === 'Gaskets';
+        return this.formData.productCategory === 'Gaskets';
     }
 
     get isOthers() {
-        return this.productCategory === 'Others';
+        return this.formData.productCategory === 'Others';
     }
 
     handleInputChange(event) {
         const field = event.target.dataset.field;
         const value = event.detail.value;
         console.log('Field:', field, 'Value:', value);
-    
-        // Update formData
-        this.formData = { ...this.formData, [field]: value };
-    
-        // Update materialNumber if the field is materialNumber
-        if (field === 'materialNumber') {
-            this.materialNumber = value;
+
+        switch (field) {
+            case 'preferredQuantity':
+                this.preferredQuantity = value;
+                break;
+            case 'selectedCertificates':
+                this.selectedCertificates = Array.isArray(value) ? value.join(';') : value;
+                break;
+            default:
+                this.formData = { ...this.formData, [field]: value };
+                break;
         }
     }
     
-    
-    
-    handleCheckboxChange(event) {
-        const field = event.target.dataset.field; 
-        console.log('Checkbox Field:', field, 'Checked:', event.target.checked); 
-        this.formData = { 
-            ...this.formData, 
-            [field]: event.target.checked 
-        };
-    }
-    
-    
-
     handleNextForProductlData() {
         this.showProductInfo = false;
         this.showPersonalDataForm = true;
@@ -207,8 +177,15 @@ export default class RequestProductButton extends LightningElement {
 
         let requestData = {
             ...this.formData,
-            materialNumber: this.materialNumber
+            preferredQuantity: this.preferredQuantity,
+            selectedCertificates: this.selectedCertificates || [],
+            shaftDiameter: this.formData.shaftDiameter ? parseInt(this.formData.shaftDiameter, 10) : null,
+            rotationSpeed: this.formData.rotationSpeed ? parseInt(this.formData.rotationSpeed, 10) : null,
+            pressure: this.formData.pressure ? parseInt(this.formData.pressure, 10) : null,
+            temperature: this.formData.temperature ? parseInt(this.formData.temperature, 10) : null,
+            movementRPMInput: this.formData.movementRPMInput ? parseInt(this.formData.movementRPMInput, 10) : null,
         };
+        
         
         console.log('Request data:', JSON.stringify (requestData));
 

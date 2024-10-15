@@ -151,23 +151,22 @@
             </lightning-input>
      
             <!-- Abrasive Particles in Medium -->
-            <label>Abrasive Particles in Medium</label>
-            <lightning-radio-group
+            <lightning-combobox
+                label="Abrasive Particles in Medium"
+                placeholder="Select Abrasive particles"
                 options={radioOptions}
-                value={abrasiveParticles}
-                onchange={handleRadioChange}
-                class="radio-group">
-            </lightning-radio-group>
+                onchange={handleInputChange}
+                data-field="abrasiveParticles">
+            </lightning-combobox>
 
             <!-- In which category do you want to request a product? -->
-            <label>In which category do you want to request a product?</label>
-            <lightning-radio-group
-                options={categoryOptions}
-                value={productCategory}
-                onchange={handleCategoryChange}
-                class="radio-group">
-            </lightning-radio-group>
-
+            <lightning-combobox 
+                label="In which category do you want to request a product?"
+                placeholder="Select Category"
+                options={productCategoryOptions}
+                onchange={handleInputChange} 
+                data-field="productCategory">
+            </lightning-combobox>
 
                     <!-- Input Fields for Category Selection -->
         <template if:true={isMechanicalSeals}>
@@ -187,11 +186,13 @@
                 data-category="Mechanical Seals" 
                 data-field="planInput">
             </lightning-input>
+
             <lightning-combobox
                 label="Operating location of your machine"
-                value={operatingLocationInput}
+                placeholder="Please choose"
                 options={operatingLocationOptions}
-                onchange={handleOperatingLocationChange}>
+                onchange={handleInputChange}
+                data-field="operatingLocationInput">
             </lightning-combobox>
             <lightning-input 
                 label="Additional information about your supply system" 
@@ -202,10 +203,12 @@
             </lightning-input>
             <label>Certificates</label>
             <lightning-checkbox-group
+                data-field="selectedCertificates"
                 options={certificateOptions}
                 value={selectedCertificates}
-                onchange={handleCertificatesChange}>
+                onchange={handleInputChange}>
             </lightning-checkbox-group>
+
         </template>
 
         <template if:true={isPackings}>
@@ -215,10 +218,10 @@
             <lightning-input 
                 label="Application (Flange, cover lid, furnace door, ...)" 
                 placeholder="Enter here"
-                value={applicationInput} 
+                value={applicationPackaging} 
                 onchange={handleInputChange} 
                 data-category="Packings" 
-                data-field="applicationInput">
+                data-field="applicationPackaging">
             </lightning-input>
 
             <!-- Packings-specific fields -->
@@ -259,10 +262,10 @@
             <lightning-input 
                 label="Application (Flange, cover lid, furnace door, ...)" 
                 placeholder="Enter here"
-                value={applicationInput} 
+                value={applicationPackaging} 
                 onchange={handleInputChange} 
                 data-category="Gaskets" 
-                data-field="applicationInput">
+                data-field="applicationPackaging">
             </lightning-input>
 
             <!-- Gaskets-specific fields -->
@@ -381,9 +384,9 @@
             <h2 class="section-title">Further Information</h2>
         
             <lightning-textarea label="Your message to us" 
-                                value={msgInput} 
-                                onchange={handleInputChange} 
-                                data-field="msgInput">
+                value={msgInput} 
+                onchange={handleInputChange} 
+                data-field="msgInput">
             </lightning-textarea>
         
             <lightning-input

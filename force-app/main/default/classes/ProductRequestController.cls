@@ -32,8 +32,8 @@ public with sharing class ProductRequestController {
         String lastName,
         String email,
         String phoneNumber,
-        String customerNumber,
-        String msgInput
+        String customerNumber
+        //String msgInput
        // Id attachmentId // If you're using attachments
     ) {
         try {
@@ -64,14 +64,14 @@ public with sharing class ProductRequestController {
             productRequest.Movement_RPM__c = movementRPMInput;
             productRequest.Geometry__c = geometryInput;
             productRequest.Screws__c = screwsInput;
-            productRequest.Others_Input__c = othersInput;
+            productRequest.Product_Requirement__c = othersInput;
             productRequest.Title__c = title;
             productRequest.First_Name__c = firstName;
             productRequest.Last_Name__c = lastName;
             productRequest.Email__c = email;
             productRequest.Phone_Number__c = phoneNumber;
             productRequest.Customer_Number__c = customerNumber;
-            productRequest.Message__c = msgInput;
+            //productRequest.Message__c = msgInput;
     
             // if (attachmentId != null) {
             //     // Logic to attach the file if required
