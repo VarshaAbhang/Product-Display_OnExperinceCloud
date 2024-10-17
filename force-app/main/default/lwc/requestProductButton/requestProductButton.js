@@ -11,7 +11,7 @@ export default class RequestProductButton extends LightningElement {
     @track showMachineInfo = false; 
     buttonIcon = 'utility:add'; 
     buttonText = 'Expand'; 
-    
+
     @track isAgreedToDataPolicy = false; 
     @track isNotABot = false; 
 
@@ -136,20 +136,16 @@ export default class RequestProductButton extends LightningElement {
     handleInputChange(event) {
         const field = event.target.dataset.field;
         const value = event.detail.value;
-        console.log('Field:', field, 'Value:', value);
-
-        switch (field) {
-            case 'preferredQuantity':
-                this.preferredQuantity = value;
-                break;
-            case 'selectedCertificates':
-                this.selectedCertificates = Array.isArray(value) ? value.join(';') : value;
-                break;
-            default:
-                this.formData = { ...this.formData, [field]: value };
-                break;
+        if (field === 'preferredQuantity') {
+            this.preferredQuantity = value;
+        } else if (field === 'selectedCertificates') {
+            this.selectedCertificates = Array.isArray(value) ? value : [value];
+        } else {
+            this.formData = { ...this.formData, [field]: value };
         }
+        console.log(`Field: ${field}, Value: ${value}`);
     }
+    
     
     handleNextForProductlData() {
         this.showProductInfo = false;
@@ -172,44 +168,47 @@ export default class RequestProductButton extends LightningElement {
         this.showFurtherInfo = false;
     }
 
+    parseInteger(value) {
+        return isNaN(parseInt(value, 10)) ? null : parseInt(value, 10);
+    }
+
     async handleSendRequest(event) {
-        console.log('clicked send request', JSON.stringify(this.formData));
-
-        let requestData = {
+        console.log('Form data before sending:', JSON.stringify(this.formData));
+        console.log('Material number:', this.formData.materialNumber);
+        const requestData = {
             ...this.formData,
+            shaftDiameter: this.parseInteger(this.formData.shaftDiameter),
+            rotationSpeed: this.parseInteger(this.formData.rotationSpeed),
+            pressure: this.parseInteger(this.formData.pressure),
+            temperature: this.parseInteger(this.formData.temperature),
+            movementRPMInput: this.parseInteger(this.formData.movementRPMInput),
             preferredQuantity: this.preferredQuantity,
-            selectedCertificates: this.selectedCertificates || [],
-            shaftDiameter: this.formData.shaftDiameter ? parseInt(this.formData.shaftDiameter, 10) : null,
-            rotationSpeed: this.formData.rotationSpeed ? parseInt(this.formData.rotationSpeed, 10) : null,
-            pressure: this.formData.pressure ? parseInt(this.formData.pressure, 10) : null,
-            temperature: this.formData.temperature ? parseInt(this.formData.temperature, 10) : null,
-            movementRPMInput: this.formData.movementRPMInput ? parseInt(this.formData.movementRPMInput, 10) : null,
+            selectedCertificates: this.selectedCertificates,
+        
         };
-        
-        
-        console.log('Request data:', JSON.stringify (requestData));
 
+        console.log('Request data:', JSON.stringify(requestData));
 
-        try {
-            const result = await sendProductRequest(requestData);
-            if (result) {   
-                this.showToast('Success', 'Product request sent successfully!', 'success');
-            } else {
-                this.showToast('Error', 'Failed to send product request.', 'error');
-            }
-        } catch (error) {
-            
-            console.error('Error sending product request:', error);
-            this.showToast('Error', error.body.message || 'An error occurred while sending the request.', 'error');
+    try {
+        const result = await sendProductRequest({requestWrapper : JSON.stringify(requestData)}); 
+        console.log('Request result:', JSON.stringify(result));
+        if (result) {
+            this.showToast('Success', 'Product request sent successfully!', 'success');
+        } else {
+            this.showToast('Error', 'Failed to send product request.', 'error');
         }
+    } catch (error) {
+        console.error('Error sending product request:', error);
+        this.showToast('Error', error.body.message || 'An error occurred while sending the request.', 'error');
     }
+}
 
-    showToast(title, message, variant) {
-        const evt = new ShowToastEvent({
-            title: title,
-            message: message,
-            variant: variant,
-        });
-        this.dispatchEvent(evt);
-    }
+showToast(title, message, variant) {
+    const evt = new ShowToastEvent({
+        title: title,
+        message: message,
+        variant: variant,
+    });
+    this.dispatchEvent(evt);
+}
 }
