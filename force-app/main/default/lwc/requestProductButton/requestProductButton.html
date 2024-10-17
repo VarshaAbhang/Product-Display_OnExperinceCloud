@@ -303,7 +303,7 @@
     </div>
                 <!-- Next Button -->
         <div class="slds-m-top_large">
-            <lightning-button class="next-button" label="Next" variant="base" onclick={handleNextForProductlData}></lightning-button>
+            <lightning-button class="next-button" label="Next" variant="base" onclick={handleNextForProductData}></lightning-button>
         </div>
     </div>
 
@@ -392,9 +392,10 @@
             <lightning-input
                 type="file"
                 label="Attachment"
-                accept="image/png, .zip"
-                onchange={handleInputChange}>
+                accept="image/png, image/jpeg, image/jpg, image/gif, .zip"
+                onchange={handleFileChange}>
             </lightning-input>
+        
         
             <h2 class="section-title">Privacy</h2>
             <lightning-input type="checkbox" 

@@ -40,8 +40,7 @@ public with sharing class ProductRequestController {
             productRequest.Message__c = wrapper.msgInput;
             productRequest.Preferred_Quantity__c = wrapper.preferredQuantity;
             productRequest.Certificates__c = String.join(wrapper.selectedCertificates, ';'); 
-            // Optionally map other fields as needed
-
+          
             insert productRequest;
 
             return productRequest.Id;
@@ -49,6 +48,32 @@ public with sharing class ProductRequestController {
             throw new AuraHandledException('An error occurred: ' + e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static void createAttachment(String parentId, String fileName, String base64Data) {
+    try {
+        ContentVersion contentVersion = new ContentVersion();
+        contentVersion.Title = fileName; 
+        contentVersion.PathOnClient = fileName; 
+        contentVersion.VersionData = EncodingUtil.base64Decode(base64Data); 
+        contentVersion.ContentLocation = 'S'; 
+
+        insert contentVersion;
+
+        ContentDocumentLink documentLink = new ContentDocumentLink();
+        documentLink.ContentDocumentId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :contentVersion.Id].ContentDocumentId;
+        documentLink.LinkedEntityId = parentId; 
+        documentLink.ShareType = 'V'; 
+        documentLink.Visibility = 'AllUsers';
+
+        insert documentLink;
+
+    } catch (Exception e) {
+        throw new AuraHandledException('An error occurred while uploading the file: ' + e.getMessage());
+    }
+}
+
+    
 
     public class ProductRequestWrapper {
         @AuraEnabled public String materialNumber;

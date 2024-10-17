@@ -1,5 +1,6 @@
 import { LightningElement, track } from 'lwc';
 import sendProductRequest from '@salesforce/apex/ProductRequestController.sendProductRequest';
+import createAttachment from '@salesforce/apex/ProductRequestController.createAttachment';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 
@@ -56,6 +57,8 @@ export default class RequestProductButton extends LightningElement {
         customerNumber: '',
         msgInput: ''
     };
+
+    attachment = null;
 
     get titleOptions() {
         return [
@@ -145,9 +148,30 @@ export default class RequestProductButton extends LightningElement {
         }
         console.log(`Field: ${field}, Value: ${value}`);
     }
+
+    handleFileChange(event) {
+        const file = event.target.files[0];
+        const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4 MB
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    
+        if (file) {
+            if (!allowedTypes.includes(file.type)) {
+                this.showToast('Error', 'Invalid file type. Please upload a PDF, JPEG, or PNG file.', 'error');
+                return;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                this.showToast('Error', 'File size exceeds the 4 MB limit.', 'error');
+                return;
+            }
+            this.attachment = file;
+            console.log('Selected file:', file.name);
+        } else {
+            this.attachment = null;
+        }
+    }
     
     
-    handleNextForProductlData() {
+    handleNextForProductData() {
         this.showProductInfo = false;
         this.showPersonalDataForm = true;
     
@@ -174,7 +198,6 @@ export default class RequestProductButton extends LightningElement {
 
     async handleSendRequest(event) {
         console.log('Form data before sending:', JSON.stringify(this.formData));
-        console.log('Material number:', this.formData.materialNumber);
         const requestData = {
             ...this.formData,
             shaftDiameter: this.parseInteger(this.formData.shaftDiameter),
@@ -184,31 +207,55 @@ export default class RequestProductButton extends LightningElement {
             movementRPMInput: this.parseInteger(this.formData.movementRPMInput),
             preferredQuantity: this.preferredQuantity,
             selectedCertificates: this.selectedCertificates,
-        
         };
-
-        console.log('Request data:', JSON.stringify(requestData));
-
-    try {
-        const result = await sendProductRequest({requestWrapper : JSON.stringify(requestData)}); 
-        console.log('Request result:', JSON.stringify(result));
-        if (result) {
-            this.showToast('Success', 'Product request sent successfully!', 'success');
-        } else {
-            this.showToast('Error', 'Failed to send product request.', 'error');
+    
+        try {
+            const result = await sendProductRequest({ requestWrapper: JSON.stringify(requestData) });
+            console.log('Request result:', JSON.stringify(result));
+            if (result) {
+                if (this.attachment) {
+                    await this.uploadAttachment(result);
+                }
+                this.showToast('Success', 'Product request sent successfully!', 'success');
+            } else {
+                this.showToast('Error', 'Failed to send product request.', 'error');
+            }
+        } catch (error) {
+            // Check if the error object and error.body.message are defined
+            const errorMessage = error && error.body && error.body.message ? error.body.message : 'An unknown error occurred.';
+            console.error('Error sending product request:', error);
+            this.showToast('Error', errorMessage, 'error');
         }
-    } catch (error) {
-        console.error('Error sending product request:', error);
-        this.showToast('Error', error.body.message || 'An error occurred while sending the request.', 'error');
     }
-}
-
-showToast(title, message, variant) {
-    const evt = new ShowToastEvent({
-        title: title,
-        message: message,
-        variant: variant,
-    });
-    this.dispatchEvent(evt);
-}
+    showToast(title, message, variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant,
+        });
+        this.dispatchEvent(event);
+    }
+    
+    async uploadAttachment(recordId) {
+        const reader = new FileReader();
+        reader.onload = async () => {
+            const base64 = reader.result.split(',')[1];
+            try {
+                // Call your Apex method to create the attachment
+                await createAttachment({
+                    parentId: recordId,  // Ensure this is the correct record ID
+                    fileName: this.attachment.name,
+                    base64Data: base64
+                });
+                console.log('File uploaded successfully');
+                this.showToast('Success', 'File uploaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                this.showToast('Error', 'Failed to upload file.', 'error');
+            }
+        };
+        reader.readAsDataURL(this.attachment);
+    }
+    
+    
 }

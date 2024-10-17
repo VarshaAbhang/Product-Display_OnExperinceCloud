@@ -28,40 +28,51 @@
                 <img src={drawings.Assebly_Drawing__c} class="custom-image" />
             </div>
                
-            <!-- Display Advantages -->
             <div class="slds-col slds-size_1-of-2 slds-p-around_small">
                 <div class="slds-text-heading_large slds-m-top_small">{drawings.code}</div> 
-
-                <div class="slds-text-heading_medium slds-m-top_small">Features</div>
-                <ul class="slds-m-top_x-small">
-                    <template for:each={drawings.features} for:item="feature">
-                        <li key={feature} class="slds-text-body_regular">{feature}</li>
-                    </template>
-                </ul>
-                <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
-
-                <div class="slds-text-heading_medium slds-m-top_small">Advantages</div>
-                <ul class="slds-m-top_x-small">
-                    <template for:each={drawings.advantages} for:item="advantage">
-                        <li key={advantage} class="slds-text-body_regular">{advantage}</li>
-                    </template>
-                </ul>
-                <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
-
-                <div class="slds-text-heading_medium slds-m-top_small">Opratings</div>
-                <ul class="slds-m-top_x-small">
-                    <template for:each={drawings.operatings} for:item="operating">
-                        <li key={operating} class="slds-text-body_regular">{operating}</li>
-                    </template>
-                </ul>
-                <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
-
-                <div class="slds-text-heading_medium slds-m-top_small">Materials</div>
-                <ul class="slds-m-top_x-small">
-                    <template for:each={drawings.materials} for:item="material">
-                        <li key={material} class="slds-text-body_regular">{material}</li>
-                    </template>
-                </ul>
+            
+                <!-- Features Section -->
+                <template if:true={drawings.features.length}>
+                    <div class="slds-text-heading_medium slds-m-top_small">Features</div>
+                    <ul class="slds-m-top_x-small">
+                        <template for:each={drawings.features} for:item="feature">
+                            <li key={feature} class="slds-text-body_regular">{feature}</li>
+                        </template>
+                    </ul>
+                    <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
+                </template>
+            
+                <!-- Advantages Section -->
+                <template if:true={drawings.advantages.length}>
+                    <div class="slds-text-heading_medium slds-m-top_small">Advantages</div>
+                    <ul class="slds-m-top_x-small">
+                        <template for:each={drawings.advantages} for:item="advantage">
+                            <li key={advantage} class="slds-text-body_regular">{advantage}</li>
+                        </template>
+                    </ul>
+                    <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
+                </template>
+            
+                <!-- Operatings Section -->
+                <template if:true={drawings.operatings.length}>
+                    <div class="slds-text-heading_medium slds-m-top_small">Operatings</div>
+                    <ul class="slds-m-top_x-small">
+                        <template for:each={drawings.operatings} for:item="operating">
+                            <li key={operating} class="slds-text-body_regular">{operating}</li>
+                        </template>
+                    </ul>
+                    <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
+                </template>
+            
+                <!-- Materials Section -->
+                <template if:true={drawings.materials.length}>
+                    <div class="slds-text-heading_medium slds-m-top_small">Materials</div>
+                    <ul class="slds-m-top_x-small">
+                        <template for:each={drawings.materials} for:item="material">
+                            <li key={material} class="slds-text-body_regular">{material}</li>
+                        </template>
+                    </ul>
+                </template>
             </div>
         </div>
     </template>
