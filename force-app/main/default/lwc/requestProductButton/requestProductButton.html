@@ -391,27 +391,29 @@
         
             <lightning-input
                 type="file"
-                label="Attachment"
+                label="Upload Image (JPEG/PNG)"
                 accept="image/png, image/jpeg, image/jpg, image/gif, .zip"
                 onchange={handleFileChange}>
             </lightning-input>
         
         
             <h2 class="section-title">Privacy</h2>
-            <lightning-input type="checkbox" 
-                             label="I agree to the data policy" 
-                             checked={isAgreedToDataPolicy} 
-                             onchange={handleCheckboxChange} 
-                             data-field="isAgreedToDataPolicy">
+            <lightning-input 
+                type="checkbox" 
+                label="I agree to the data policy" 
+                checked={isAgreedToDataPolicy} 
+                onchange={handleCheckboxChange} 
+                data-field="isAgreedToDataPolicy">
             </lightning-input>
-            
-            <lightning-input type="checkbox" 
-                             label="I am not a bot" 
-                             checked={isNotABot} 
-                             onchange={handleCheckboxChange} 
-                             data-field="isNotABot">
+
+            <lightning-input 
+                type="checkbox" 
+                label="I am not a bot" 
+                checked={isNotABot} 
+                onchange={handleCheckboxChange} 
+                data-field="isNotABot">
             </lightning-input>
-        
+
             <div class="slds-m-top_large">
                 <lightning-button class="back-button" 
                                  label="Back" 

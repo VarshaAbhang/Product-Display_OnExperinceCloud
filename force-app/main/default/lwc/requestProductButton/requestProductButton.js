@@ -1,11 +1,11 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track ,api} from 'lwc';
 import sendProductRequest from '@salesforce/apex/ProductRequestController.sendProductRequest';
 import createAttachment from '@salesforce/apex/ProductRequestController.createAttachment';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 
 export default class RequestProductButton extends LightningElement {
-
+@api recordId;
     @track preferredQuantity = 1;
     @track selectedCertificates = []; 
 
@@ -149,28 +149,6 @@ export default class RequestProductButton extends LightningElement {
         console.log(`Field: ${field}, Value: ${value}`);
     }
 
-    handleFileChange(event) {
-        const file = event.target.files[0];
-        const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4 MB
-        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-    
-        if (file) {
-            if (!allowedTypes.includes(file.type)) {
-                this.showToast('Error', 'Invalid file type. Please upload a PDF, JPEG, or PNG file.', 'error');
-                return;
-            }
-            if (file.size > MAX_FILE_SIZE) {
-                this.showToast('Error', 'File size exceeds the 4 MB limit.', 'error');
-                return;
-            }
-            this.attachment = file;
-            console.log('Selected file:', file.name);
-        } else {
-            this.attachment = null;
-        }
-    }
-    
-    
     handleNextForProductData() {
         this.showProductInfo = false;
         this.showPersonalDataForm = true;
@@ -192,12 +170,45 @@ export default class RequestProductButton extends LightningElement {
         this.showFurtherInfo = false;
     }
 
+    handleCheckboxChange(event) {
+        const fieldName = event.target.dataset.field; 
+    
+        if (fieldName === 'isAgreedToDataPolicy') {
+            this.isAgreedToDataPolicy = event.target.checked;
+        } else if (fieldName === 'isNotABot') {
+            this.isNotABot = event.target.checked;
+        }
+    }
+    
+
     parseInteger(value) {
         return isNaN(parseInt(value, 10)) ? null : parseInt(value, 10);
     }
 
+    handleFileChange(event) {
+        const file = event.target.files[0];
+        const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4 MB
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    
+        if (file) {
+            if (!allowedTypes.includes(file.type)) {
+                this.showToast('Error', 'Invalid file type. Please upload a PDF, JPEG, or PNG file.', 'error');
+                return;
+            }
+            if (file.size > MAX_FILE_SIZE) {
+                this.showToast('Error', 'File size exceeds the 4 MB limit.', 'error');
+                return;
+            }
+            this.attachment = file;
+            console.log('Selected file:', file.name);
+        } else {
+            this.attachment = null;
+        }
+    }
+
     async handleSendRequest(event) {
         console.log('Form data before sending:', JSON.stringify(this.formData));
+        
         const requestData = {
             ...this.formData,
             shaftDiameter: this.parseInteger(this.formData.shaftDiameter),
@@ -212,21 +223,30 @@ export default class RequestProductButton extends LightningElement {
         try {
             const result = await sendProductRequest({ requestWrapper: JSON.stringify(requestData) });
             console.log('Request result:', JSON.stringify(result));
+    
             if (result) {
+                
                 if (this.attachment) {
-                    await this.uploadAttachment(result);
+                    try {
+                        await this.uploadAttachment(result);
+                        this.showToast('Success', 'File uploaded successfully!', 'success');
+                    } catch (uploadError) {
+                        console.error('Error uploading file:', uploadError);
+                        this.showToast('Error', 'Failed to upload file.', 'error');
+                    }
                 }
                 this.showToast('Success', 'Product request sent successfully!', 'success');
+                this.resetForm(); 
             } else {
                 this.showToast('Error', 'Failed to send product request.', 'error');
             }
         } catch (error) {
-            // Check if the error object and error.body.message are defined
             const errorMessage = error && error.body && error.body.message ? error.body.message : 'An unknown error occurred.';
             console.error('Error sending product request:', error);
             this.showToast('Error', errorMessage, 'error');
         }
     }
+    
     showToast(title, message, variant) {
         const event = new ShowToastEvent({
             title: title,
@@ -237,13 +257,18 @@ export default class RequestProductButton extends LightningElement {
     }
     
     async uploadAttachment(recordId) {
+        if (!this.attachment) {
+            console.error('No attachment to upload.');
+            this.showToast('Error', 'No attachment found to upload.', 'error');
+            return; 
+        }
         const reader = new FileReader();
         reader.onload = async () => {
-            const base64 = reader.result.split(',')[1];
+            const base64 = reader.result.split(',')[1]; 
+    
             try {
-                // Call your Apex method to create the attachment
                 await createAttachment({
-                    parentId: recordId,  // Ensure this is the correct record ID
+                    parentId: recordId,  
                     fileName: this.attachment.name,
                     base64Data: base64
                 });
@@ -257,5 +282,22 @@ export default class RequestProductButton extends LightningElement {
         reader.readAsDataURL(this.attachment);
     }
     
+    resetForm() {
+        Object.keys(this.formData).forEach(key => {
+        
+            if (typeof this.formData[key] === 'number') {
+                this.formData[key] = null; 
+            } else {
+                this.formData[key] = ''; 
+            }
+        });
+        this.shaftDiameter = '';
+        this.rotationSpeed = '';
+        this.pressure = '';
+        this.temperature = '';
+        this.movementRPMInput = '';
+        this.preferredQuantity = '';
+        this.selectedCertificates = [];
+    }
     
 }
