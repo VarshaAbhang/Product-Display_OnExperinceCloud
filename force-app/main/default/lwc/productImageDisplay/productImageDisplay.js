@@ -2,6 +2,7 @@ import { LightningElement, track, wire } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
 import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
 import fetchDrawings from '@salesforce/apex/DrawingController.fetchDrawings';
+import getCurrentUserProfile from '@salesforce/apex/DrawingController.getCurrentUserProfile';
 import DRAWING_OBJECT from '@salesforce/schema/Drawing__c'; 
 import ITEM_FAMILY_FIELD from '@salesforce/schema/Drawing__c.Item_Family__c'; 
 import ITEM_CATEGORY_FIELD from '@salesforce/schema/Drawing__c.Item_Category__c'; 
@@ -13,6 +14,16 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @track selectedItemFamily;
     @track selectedItemCategory;
     @track drawings = [];
+    @track userProfile;
+
+    @wire(getCurrentUserProfile)
+    wiredUserProfile({ data, error }) {
+        if (data) {
+            this.userProfile = data;
+        } else if (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    }
 
     @wire(getObjectInfo, { objectApiName: DRAWING_OBJECT })
     drawingObjectInfo;
@@ -22,6 +33,13 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     itemFamilyPicklist({ data, error }) {
         if (data) {
             this.itemFamilyOptions = data.values.map(item => ({ label: item.label, value: item.value }));
+
+            // Filter out "MS Spares" for certain profiles
+            
+            if (this.userProfile === 'System Administrator' || this.userProfile === 'Products Profile') {
+                this.itemFamilyOptions = this.itemFamilyOptions.filter(option => option.value !== 'MS Spares');
+            }
+
             this.loadImages();
         } else if (error) {
             console.error('Error fetching Item Family picklist values:', error);
@@ -53,7 +71,7 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
                 console.error('Error fetching all drawings:', error);
             });
     }
-    
+
     @wire(fetchDrawings, { itemFamily: '$selectedItemFamily', itemCategory: '$selectedItemCategory' })
     wiredDrawings({ data, error }) {
         if (data) {
