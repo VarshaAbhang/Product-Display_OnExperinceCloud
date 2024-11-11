@@ -52,6 +52,7 @@ public with sharing class ProductRequestController {
         }
     }
 
+    @TestVisible
     private static void sendEmail(ProductRequestWrapper wrapper, Id productRequestId) {
         try {
             System.debug('Preparing to send email...');
