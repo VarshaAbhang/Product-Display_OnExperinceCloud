@@ -75,3 +75,17 @@ li {
     border: none; /* Remove default border */
     color: white; /* White text color */
 }
+
+.custom-images {
+    width: auto; /* Adjust as needed for your layout */
+    height: auto;
+    object-fit: cover; /* Ensures image fills container without distortion */
+    border-radius: 5px; /* Optional: rounded corners */
+    display: block;
+    margin: 0 auto;
+}
+
+.related-grid-spacing {
+    margin-top: 30px; /* Adjust the value as needed for your layout */
+}
+

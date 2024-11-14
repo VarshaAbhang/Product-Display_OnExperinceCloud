@@ -2,10 +2,12 @@ import { LightningElement, track, wire } from 'lwc';
 import { CurrentPageReference } from 'lightning/navigation';
 import { NavigationMixin } from 'lightning/navigation';
 import fetchDrawingById from '@salesforce/apex/DrawingController.fetchDrawingById';
+import fetchRelatedDrawings from '@salesforce/apex/DrawingController.fetchRelatedDrawings';
 
 export default class DrawingDetailsPage extends NavigationMixin(LightningElement) {
     @track drawings = {};
     @track drawingId;
+    @track relatedDrawings = []; 
 
     @wire(CurrentPageReference)
     currentPageReference({ state }) {
@@ -17,7 +19,6 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
 
     loadDrawingDetails() {
         if (this.drawingId) {
-            console.log('drawingId:', this.drawingId);
             fetchDrawingById({ drawingId: this.drawingId })
                 .then(result => {
                     this.drawings = {
@@ -28,6 +29,7 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                         operatings: result.Operating_range__c ? result.Operating_range__c.split('\n') : [],
                         materials: result.Materials__c ? result.Materials__c.split('\n') : []
                     };
+                    this.loadRelatedDrawings();
                 })
                 .catch(error => {
                     console.error('Error fetching drawing details:', error);
@@ -35,18 +37,27 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
         }
     }
 
+    loadRelatedDrawings() {
+        fetchRelatedDrawings({ drawingId: this.drawingId })
+            .then(result => {
+                this.relatedDrawings = result;
+            })
+            .catch(error => {
+                console.error('Error fetching related drawings:', error);
+            });
+    }
+
     handleRequestProduct() {
-        const drawingId = this.drawings.Id; // Use the ID from the drawings object
-        console.log('Button clicked. Drawing ID:', drawingId);
+        const drawingId = this.drawings.Id;
         
         if (drawingId) {
             this[NavigationMixin.Navigate]({
                 type: 'comm__namedPage',
                 attributes: {
-                    name: 'Request_Product__c' 
+                    name: 'Request_Product__c'
                 },
                 state: {
-                    drawingId: drawingId 
+                    drawingId: drawingId
                 }
             });
         } else {

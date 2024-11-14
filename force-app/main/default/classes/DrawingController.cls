@@ -24,4 +24,16 @@ public with sharing class DrawingController {
         return [SELECT Id, Name, Drawing_Image__c, Code__c, Product_Features__c, Assebly_Drawing__c, Advantages__c, Operating_range__c, Materials__c
                 FROM Drawing__c WHERE Id = :drawingId];
     }
+
+
+    @AuraEnabled(cacheable=true)
+    public static List<Drawing__c> fetchRelatedDrawings(String drawingId) {
+   
+        Drawing__c selectedDrawing = [SELECT Item_Category__c FROM Drawing__c WHERE Id = :drawingId LIMIT 1];
+        
+        return [SELECT Id, Name, Drawing_Image__c, Code__c, Product_Features__c 
+                FROM Drawing__c 
+                WHERE Item_Category__c = :selectedDrawing.Item_Category__c AND Id != :drawingId];
+    }
+
 }

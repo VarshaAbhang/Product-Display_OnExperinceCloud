@@ -75,5 +75,16 @@
                 </template>
             </div>
         </div>
+
+        <template if:true={relatedDrawings}>
+            <div class="related-grid-spacing slds-grid slds-wrap">
+                <template for:each={relatedDrawings} for:item="relatedDrawing">
+                    <div key={relatedDrawing.Id} class="slds-col slds-size_1-of-4 slds-p-around_small">
+                        <img src={relatedDrawing.Drawing_Image__c} class="custom-image" />
+                    </div>
+                </template>
+            </div>
+        </template>
+        
     </template>
 </template>
