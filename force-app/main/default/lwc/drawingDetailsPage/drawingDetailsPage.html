@@ -1,90 +1,142 @@
 <template>
     <template if:true={drawings.Id}>
+        <!-- Top Section: Code Name and Request Product Button -->
         <div class="slds-grid slds-wrap slds-p-around_medium">
             <!-- Left Side: Code Name -->
             <div class="slds-col slds-size_1-of-2">
                 <div class="slds-text-heading_large">{drawings.code}</div>
             </div>
-            
+
             <!-- Right Side: Request Product Button -->
             <div class="slds-col slds-size_1-of-2 slds-text-align_right">
                 <lightning-button 
-                    class="product-button"
                     label="Request Product" 
                     variant="brand" 
                     onclick={handleRequestProduct}>
                 </lightning-button>
             </div>
         </div>
-        
+
+        <!-- Modal Section -->
+        <template if:true={isModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- Modal Header -->
+                    <header class="slds-modal__header">
+                        <h2 class="slds-text-heading_medium">Request Product</h2>
+                        <button 
+                            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" 
+                            title="Close" 
+                            onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse"></lightning-icon>
+                        </button>
+                    </header>
+
+                    <!-- Modal Body -->
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-combobox 
+                            label="Title" 
+                            placeholder="Please choose"
+                            options={titleOptions}
+                            onchange={handleInputChange} 
+                            data-field="title"
+                            required>
+                        </lightning-combobox>
+                        <lightning-input label="First Name" data-field="firstName" onchange={handleInputChange} required></lightning-input>
+                        <lightning-input label="Last Name" data-field="lastName" onchange={handleInputChange} required></lightning-input>
+                        <lightning-input label="Email Address" data-field="email" onchange={handleInputChange} required></lightning-input>
+                        <lightning-input label="Phone Number" data-field="phoneNumber" onchange={handleInputChange} required></lightning-input>
+                        <lightning-input label="Company Name" data-field="companyName" onchange={handleInputChange} required></lightning-input>
+                        <lightning-combobox 
+                            label="Country" 
+                            placeholder="Please choose"
+                            options={countryOptions}
+                            onchange={handleInputChange} 
+                            data-field="country"
+                            required>
+                        </lightning-combobox> 
+                        <lightning-input label="Product Name" data-field="productName" onchange={handleInputChange} required></lightning-input>
+                        <lightning-combobox  
+                            label="Product Family" 
+                            placeholder="Select Product"
+                            options={productFamilyOptions} 
+                            onchange={handleInputChange}
+                            data-field="productFamily"
+                            required>
+                        </lightning-combobox>
+                        <lightning-textarea 
+                            label="Your Message" 
+                            data-field="msgInput" 
+                            onchange={handleInputChange}>
+                        </lightning-textarea>
+                        <lightning-input label="Website" type="url" data-field="website" onchange={handleInputChange}></lightning-input> 
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" onclick={closeModal}></lightning-button>
+                        <lightning-button label="Submit" variant="brand" onclick={handleSendRequest}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- Drawing Image Section -->
         <div class="image-container">
             <div class="watermark">{drawings.code}</div>
             <img src={drawings.Drawing_Image__c} class="custom-drawing_image" />
         </div>
 
+        <!-- Features and Other Details -->
         <div class="slds-grid slds-wrap">
-            <!-- Display Image -->
-            <div class="slds-col slds-size_1-of-2 slds-p-around_small"> 
+            <!-- Left Side: Display Image -->
+            <div class="slds-col slds-size_1-of-2 slds-p-around_small">
                 <img src={drawings.Assebly_Drawing__c} class="custom-image" />
             </div>
-               
+
+            <!-- Right Side: Details -->
             <div class="slds-col slds-size_1-of-2 slds-p-around_small">
-                <div class="slds-text-heading_large slds-m-top_small">{drawings.code}</div> 
-            
-                <!-- Features Section -->
-                <template if:true={drawings.features.length}>
-                    <div class="slds-text-heading_medium slds-m-top_small">Features</div>
-                    <ul class="slds-m-top_x-small">
-                        <template for:each={drawings.features} for:item="feature">
-                            <li key={feature} class="slds-text-body_regular">{feature}</li>
-                        </template>
-                    </ul>
-                    <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
-                </template>
-            
-                <!-- Advantages Section -->
+                <div class="slds-text-heading_large slds-m-top_small">{drawings.code}</div>
+
+
+                <!-- Advantages -->
                 <template if:true={drawings.advantages.length}>
                     <div class="slds-text-heading_medium slds-m-top_small">Advantages</div>
-                    <ul class="slds-m-top_x-small">
+                    <ul>
                         <template for:each={drawings.advantages} for:item="advantage">
-                            <li key={advantage} class="slds-text-body_regular">{advantage}</li>
+                            <li key={advantage}>{advantage}</li>
                         </template>
                     </ul>
-                    <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
-                </template>
-            
-                <!-- Operatings Section -->
-                <template if:true={drawings.operatings.length}>
-                    <div class="slds-text-heading_medium slds-m-top_small">Operatings</div>
-                    <ul class="slds-m-top_x-small">
-                        <template for:each={drawings.operatings} for:item="operating">
-                            <li key={operating} class="slds-text-body_regular">{operating}</li>
-                        </template>
-                    </ul>
-                    <hr class="slds-m-top_x-small" style="border-color: lightgray;"/>
-                </template>
-            
-                <!-- Materials Section -->
-                <template if:true={drawings.materials.length}>
-                    <div class="slds-text-heading_medium slds-m-top_small">Materials</div>
-                    <ul class="slds-m-top_x-small">
-                        <template for:each={drawings.materials} for:item="material">
-                            <li key={material} class="slds-text-body_regular">{material}</li>
-                        </template>
-                    </ul>
+                    <hr />
                 </template>
             </div>
         </div>
 
         <template if:true={relatedDrawings}>
+            <div class="slds-text-heading_medium slds-m-top_small">Similar products</div>
             <div class="related-grid-spacing slds-grid slds-wrap">
                 <template for:each={relatedDrawings} for:item="relatedDrawing">
                     <div key={relatedDrawing.Id} class="slds-col slds-size_1-of-4 slds-p-around_small">
-                        <img src={relatedDrawing.Drawing_Image__c} class="custom-image" />
+                        <template if:true={relatedDrawing.Drawing_Image__c}>
+                            <img src={relatedDrawing.Drawing_Image__c} 
+                                 class="custom-image" 
+                                 data-id={relatedDrawing.Id} 
+                                 onclick={handleRelatedImageClick} />
+                                 
+                            <div class="slds-m-top_small">{relatedDrawing.Code__c}</div>
+                        </template>
                     </div>
                 </template>
             </div>
         </template>
         
+
+        <lightning-button
+            label="Back to the overview"
+            variant="brand"
+            icon-name="utility:back"
+            onclick={handleBackpage}>
+        </lightning-button>
     </template>
 </template>

@@ -15,6 +15,7 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @track selectedItemCategory;
     @track drawings = [];
     @track userProfile;
+    @track isLoading = false;
 
     @wire(getCurrentUserProfile)
     wiredUserProfile({ data, error }) {
@@ -28,14 +29,12 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @wire(getObjectInfo, { objectApiName: DRAWING_OBJECT })
     drawingObjectInfo;
 
-
     @wire(getPicklistValues, { recordTypeId: '$drawingObjectInfo.data.defaultRecordTypeId', fieldApiName: ITEM_FAMILY_FIELD })
     itemFamilyPicklist({ data, error }) {
         if (data) {
             this.itemFamilyOptions = data.values.map(item => ({ label: item.label, value: item.value }));
 
             // Filter out "MS Spares" for certain profiles
-            
             if (this.userProfile === 'System Administrator' || this.userProfile === 'Products Profile') {
                 this.itemFamilyOptions = this.itemFamilyOptions.filter(option => option.value !== 'MS Spares');
             }
@@ -49,50 +48,51 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @wire(getPicklistValues, { recordTypeId: '$drawingObjectInfo.data.defaultRecordTypeId', fieldApiName: ITEM_CATEGORY_FIELD })
     itemCategoryPicklist({ data, error }) {
         if (data) {
-            this.itemCategoryOptions = data; 
+            this.itemCategoryOptions = data;
         } else if (error) {
             console.error('Error fetching Item Category picklist values:', error);
         }
     }
 
     loadImages() {
+        this.isLoading = true;
         fetchDrawings('', '')
             .then(result => {
-                this.drawings = result.map(drawing => {
-                    return {
-                        id: drawing.Id, 
-                        imageUrl: drawing.Drawing_Image__c,
-                        code: drawing.Code__c,
-                        features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
-                    };
-                });
+                this.drawings = result.map(drawing => ({
+                    id: drawing.Id, 
+                    imageUrl: drawing.Drawing_Image__c,
+                    code: drawing.Code__c,
+                    features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+                }));
             })
             .catch(error => {
                 console.error('Error fetching all drawings:', error);
+            })
+            .finally(() => {
+                this.isLoading = false;
             });
     }
 
     @wire(fetchDrawings, { itemFamily: '$selectedItemFamily', itemCategory: '$selectedItemCategory' })
     wiredDrawings({ data, error }) {
+        this.isLoading = true;
         if (data) {
-            this.drawings = data.map(drawing => {
-                return {
-                    id: drawing.Id, 
-                    imageUrl: drawing.Drawing_Image__c,
-                    code: drawing.Code__c,
-                    features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
-                };
-            });
+            this.drawings = data.map(drawing => ({
+                id: drawing.Id, 
+                imageUrl: drawing.Drawing_Image__c,
+                code: drawing.Code__c,
+                features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+            }));
         } else if (error) {
             console.error('Error fetching drawings with images:', error);
         }
+        this.isLoading = false;
     }
 
     handleItemFamilyChange(event) {
         this.selectedItemFamily = event.detail.value;
         this.selectedItemCategory = null;
         this.filteredItemCategoryOptions = [];
-
 
         if (this.itemCategoryOptions.controllerValues) {
             const key = this.itemCategoryOptions.controllerValues[this.selectedItemFamily];
@@ -127,6 +127,4 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
             console.error('Drawing ID not found');
         }
     }
-    
-    
 }

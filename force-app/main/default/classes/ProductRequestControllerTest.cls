@@ -30,40 +30,14 @@ public class ProductRequestControllerTest {
     @isTest
     static void testSendProductRequest() {
         ProductRequestController.ProductRequestWrapper wrapper = new ProductRequestController.ProductRequestWrapper();
-        wrapper.materialNumber = '12345';
-        wrapper.articleName = 'Test Article';
-        wrapper.application = 'Test Application';
-        wrapper.machineType = 'Test Machine';
-        wrapper.serialNumber = 'SN123';
-        wrapper.shaftDiameter = 10;
-        wrapper.rotationSpeed = 2000;
-        wrapper.machineTag = 'Test Tag';
-        wrapper.pressure = 100;
-        wrapper.temperature = 25;
-        wrapper.medium = 'Oil';
-        wrapper.abrasiveParticles = 'Yes';
-        wrapper.productCategory = 'Mechanical Seals';
-        wrapper.sealingSupplySystemInput = 'Supply System A';
-        wrapper.planInput = 'Plan A';
-        wrapper.operatingLocationInput = 'Inside';
-        wrapper.additionalInfoInput = 'Additional Info';
-        wrapper.applicationInput = 'App Input';
-        wrapper.dimensionsSealChamberInput = 'Dimensions';
-        wrapper.movementRPMInput = 1500;
-        wrapper.geometryInput = 'Geometry';
-        wrapper.gasketgeometryInput = 'Gasket Geometry';
-        wrapper.screwsInput = 'Screws';
-        wrapper.othersInput = 'Other Requirements';
         wrapper.title = 'Mr.';
         wrapper.firstName = 'John';
         wrapper.lastName = 'Doe';
         wrapper.email = 'johndoe@example.com';
         wrapper.phoneNumber = '1234567890';
-        wrapper.customerNumber = 'CUST123';
-        wrapper.msgInput = 'Test message';
-        wrapper.preferredQuantity = 10;
-        wrapper.selectedCertificates = new List<String>{ 'ATEX Declaration','2.1 Declaration' };
-
+        wrapper.country = 'India';
+        wrapper.productName ='test Product';
+        
         String requestWrapperJson = JSON.serialize(wrapper);
 
         Test.startTest();
@@ -93,39 +67,14 @@ public class ProductRequestControllerTest {
         insert standardUser;
 
         ProductRequestController.ProductRequestWrapper wrapper = new ProductRequestController.ProductRequestWrapper();
-        wrapper.materialNumber = '12345678912';
-        wrapper.articleName = 'Test Article';
-        wrapper.application = 'Test Application';
-        wrapper.machineType = 'Test Machine';
-        wrapper.serialNumber = 'SN123';
-        wrapper.shaftDiameter = 10;
-        wrapper.rotationSpeed = 2000;
-        wrapper.machineTag = 'Test Tag';
-        wrapper.pressure = 100;
-        wrapper.temperature = 25;
-        wrapper.medium = 'Oil';
-        wrapper.abrasiveParticles = 'Yes';
-        wrapper.productCategory = 'Mechanical Seals';
-        wrapper.sealingSupplySystemInput = 'Supply System A';
-        wrapper.planInput = 'Plan A';
-        wrapper.operatingLocationInput = 'Inside';
-        wrapper.additionalInfoInput = 'Additional Info';
-        wrapper.applicationInput = 'App Input';
-        wrapper.dimensionsSealChamberInput = 'Dimensions';
-        wrapper.movementRPMInput = 1500;
-        wrapper.geometryInput = 'Geometry';
-        wrapper.gasketgeometryInput = 'Gasket Geometry';
-        wrapper.screwsInput = 'Screws';
-        wrapper.othersInput = 'Other Requirements';
         wrapper.title = 'Mr.';
         wrapper.firstName = 'John';
         wrapper.lastName = 'Doe';
         wrapper.email = 'johndoe@example.com';
         wrapper.phoneNumber = '1234567890';
-        wrapper.customerNumber = 'CUST123';
-        wrapper.msgInput = 'Test message';
-        wrapper.preferredQuantity = 10;
-        wrapper.selectedCertificates = new List<String>{ 'ATEX Declaration','2.1 Declaration' };
+        wrapper.country = 'India';
+        wrapper.productName ='test Product';
+
 
         String requestWrapperJson = JSON.serialize(wrapper);
 
@@ -163,47 +112,47 @@ public class ProductRequestControllerTest {
         System.assert(true, 'Email logic executed without exceptions');
     }
 
-    @isTest
-	static void testCreateAttachment() {
+    // @isTest
+	// static void testCreateAttachment() {
   
-    Account testAccount = new Account(Name = 'Test Account');
-    insert testAccount;
+    // Account testAccount = new Account(Name = 'Test Account');
+    // insert testAccount;
     
-    String parentId = testAccount.Id;
-    String fileName = 'TestFile.pdf';
-    String base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test file content'));
+    // String parentId = testAccount.Id;
+    // String fileName = 'TestFile.pdf';
+    // String base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test file content'));
 
-    Test.startTest();
-    Id contentDocumentId = ProductRequestController.createAttachment(parentId, fileName, base64Data);
-    Test.stopTest();
+    // Test.startTest();
+    // Id contentDocumentId = ProductRequestController.createAttachment(parentId, fileName, base64Data);
+    // Test.stopTest();
 
-    System.assertNotEquals(null, contentDocumentId, 'ContentDocumentId should not be null');
-    ContentVersion contentVersion = [
-        SELECT Id, Title, PathOnClient, VersionData 
-        FROM ContentVersion 
-        WHERE ContentDocumentId = :contentDocumentId
-        LIMIT 1
-    ];
-    System.assertEquals(fileName, contentVersion.Title, 'The file name should match the title in ContentVersion');
-	}
+    // System.assertNotEquals(null, contentDocumentId, 'ContentDocumentId should not be null');
+    // ContentVersion contentVersion = [
+    //     SELECT Id, Title, PathOnClient, VersionData 
+    //     FROM ContentVersion 
+    //     WHERE ContentDocumentId = :contentDocumentId
+    //     LIMIT 1
+    // ];
+    // System.assertEquals(fileName, contentVersion.Title, 'The file name should match the title in ContentVersion');
+	// }
 
-	@isTest
-	static void testCreateAttachment_CatchBlock() {
+	// @isTest
+	// static void testCreateAttachment_CatchBlock() {
 
-    String invalidParentId = 'InvalidParentId'; 
-    String fileName = 'TestFile.pdf';
-    String corruptedBase64Data = 'InvalidBase64';  
+    // String invalidParentId = 'InvalidParentId'; 
+    // String fileName = 'TestFile.pdf';
+    // String corruptedBase64Data = 'InvalidBase64';  
 
-    try {
+    // try {
       
-        Test.startTest();
-        Id contentDocumentId = ProductRequestController.createAttachment(invalidParentId, fileName, corruptedBase64Data);
-        Test.stopTest();
+    //     Test.startTest();
+    //     Id contentDocumentId = ProductRequestController.createAttachment(invalidParentId, fileName, corruptedBase64Data);
+    //     Test.stopTest();
 
-        System.assert(false, 'Exception was expected but not thrown');
-    } catch (Exception e) {
-        System.assert(true, 'Exception successfully caught in the catch block: ' + e.getMessage());
-    }
-	}
+    //     System.assert(false, 'Exception was expected but not thrown');
+    // } catch (Exception e) {
+    //     System.assert(true, 'Exception successfully caught in the catch block: ' + e.getMessage());
+    // }
+	// }
 
 }

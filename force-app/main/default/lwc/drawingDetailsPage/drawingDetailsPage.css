@@ -21,6 +21,11 @@
     font-size: 1.5rem; /* Large text for the code */
     font-weight: bold; /* Makes the code bold */
 }
+
+.custom-margin {
+    margin-left: 20px;
+}
+
 .slds-text-heading_large {
     font-size: 2rem; /* Large text for the code */
     font-weight: bold; /* Makes the code bold */
