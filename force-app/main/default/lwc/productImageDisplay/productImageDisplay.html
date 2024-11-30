@@ -1,7 +1,7 @@
 <template>
     <div class="slds-grid slds-wrap slds-p-around_medium">
         <!-- Item Family Dropdown -->
-        <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+        <div class="slds-col slds-size_1-of-3 slds-p-around_small">
             <lightning-combobox
                 name="itemFamily"
                 label="Item Family"
@@ -13,7 +13,7 @@
         </div>
 
         <!-- Item Category Dropdown -->
-        <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+        <div class="slds-col slds-size_1-of-3 slds-p-around_small">
             <lightning-combobox
                 name="itemCategory"
                 label="Item Category"
@@ -24,11 +24,22 @@
             </lightning-combobox>
         </div>
 
+        <!-- Type Dropdown -->
+        <div class="slds-col slds-size_1-of-3 slds-p-around_small">
+            <lightning-combobox
+                name="type"
+                label="Type"
+                value={selectedType}
+                placeholder="Select Type"
+                options={typeOptions}
+                onchange={handleTypeChange}>
+            </lightning-combobox>
+        </div>
+
         <template if:true={drawings}>
             <template for:each={drawings} for:item="drawing">
                 <template if:true={drawing.imageUrl}>
                     <div key={drawing.id} class="slds-p-around_small">
-                    
                         <img src={drawing.imageUrl} class="custom-image" 
                             data-id={drawing.id} 
                             onclick={handleImageClick}/>
@@ -47,6 +58,5 @@
         <template if:false={drawings.length}>
             <div>No drawings found...</div>
         </template>
-        
     </div>
 </template>
