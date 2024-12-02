@@ -82,10 +82,7 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                     this.drawings = {
                         ...result,
                         code: result.Code__c,
-                        features: result.Product_Features__c ? result.Product_Features__c.split('\n') : [],
-                        advantages: result.Advantages__c ? result.Advantages__c.split('\n') : [],
-                        operatings: result.Operating_range__c ? result.Operating_range__c.split('\n') : [],
-                        materials: result.Materials__c ? result.Materials__c.split('\n') : []
+                        advantages: result.Advantages__c ? result.Advantages__c.split('\n') : []
                     };
                     this.loadRelatedDrawings();
                 })
