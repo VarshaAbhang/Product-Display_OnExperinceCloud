@@ -27,12 +27,10 @@
         <!-- Type Dropdown -->
         <div class="slds-col slds-size_1-of-3 slds-p-around_small">
             <lightning-combobox
-                name="type"
-                label="Type"
-                value={selectedType}
-                placeholder="Select Type"
-                options={typeOptions}
-                onchange={handleTypeChange}>
+                label="Recommended Application"
+                value={selectedRecommendedApplicationType}
+                options={recommendedApplicationOptions}
+                onchange={handleRecommendedApplicationChange}>
             </lightning-combobox>
         </div>
 

@@ -2,12 +2,12 @@ import { LightningElement, track, wire } from 'lwc';
 import { NavigationMixin } from "lightning/navigation";
 import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
 import fetchDrawings from '@salesforce/apex/DrawingController.fetchDrawings';
+import fetchRecommendedApplicationNames from '@salesforce/apex/DrawingController.fetchRecommendedApplicationNames';
 import getCurrentUserProfile from '@salesforce/apex/DrawingController.getCurrentUserProfile';
 import DRAWING_OBJECT from '@salesforce/schema/Drawing__c'; 
 import DRAWING_DETAILS_OBJECT from '@salesforce/schema/Drawing_Details__c';
 import ITEM_FAMILY_FIELD from '@salesforce/schema/Drawing__c.Item_Family__c'; 
 import ITEM_CATEGORY_FIELD from '@salesforce/schema/Drawing__c.Item_Category__c'; 
-import TYPE_FIELD from '@salesforce/schema/Drawing_Details__c.Type__c'; // Correct related field reference
 
 export default class ProductImageDisplay extends NavigationMixin(LightningElement) {
     @track itemFamilyOptions = [];
@@ -15,8 +15,8 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @track filteredItemCategoryOptions = [];
     @track selectedItemFamily;
     @track selectedItemCategory;
-    @track selectedType; // Variable to track Type picklist selection
-    @track typeOptions = []; // Store Type picklist values
+    @track recommendedApplicationOptions = [];
+    @track selectedRecommendedApplicationType;
     @track drawings = [];
     @track userProfile;
     @track isLoading = false;
@@ -37,16 +37,15 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @wire(getObjectInfo, { objectApiName: DRAWING_DETAILS_OBJECT })
     drawingdetailObjectInfo;
 
-    // Fetch Item Family picklist values
     @wire(getPicklistValues, { recordTypeId: '$drawingObjectInfo.data.defaultRecordTypeId', fieldApiName: ITEM_FAMILY_FIELD })
     itemFamilyPicklist({ data, error }) {
         if (data) {
             this.itemFamilyOptions = data.values.map(item => ({ label: item.label, value: item.value }));
 
-            // Filter out "MS Spares" for certain profiles
-            if (this.userProfile === 'System Administrator' || this.userProfile === 'Products Profile') {
-                this.itemFamilyOptions = this.itemFamilyOptions.filter(option => option.value !== 'MS Spares');
-            }
+            // // Filter out "MS Spares" for certain profiles
+            // if (this.userProfile === 'System Administrator' || this.userProfile === 'Products Profile') {
+            //     this.itemFamilyOptions = this.itemFamilyOptions.filter(option => option.value !== 'MS Spares');
+            // }
 
             this.loadImages();
         } else if (error) {
@@ -54,7 +53,6 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
         }
     }
 
-    // Fetch Item Category picklist values
     @wire(getPicklistValues, { recordTypeId: '$drawingObjectInfo.data.defaultRecordTypeId', fieldApiName: ITEM_CATEGORY_FIELD })
     itemCategoryPicklist({ data, error }) {
         if (data) {
@@ -64,17 +62,22 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
         }
     }
 
-    // Fetch Type picklist values for the related Drawing_Details__c object
-    @wire(getPicklistValues, { recordTypeId: '$drawingdetailObjectInfo.data.defaultRecordTypeId', fieldApiName: TYPE_FIELD })
-    typePicklist({ data, error }) {
-        if (data) {
-            this.typeOptions = data.values.map(item => ({ label: item.label, value: item.value }));
-        } else if (error) {
-            console.error('Error fetching Type picklist values:', error);
-        }
-    }
+    @wire(fetchRecommendedApplicationNames)
+    wiredRecommendedApplications({ data, error }) {
+    if (data) {
+        this.recommendedApplicationOptions = Array.from(
+            new Map(data.map(item => [item, item])).values()
+        ).map(name => ({
+            label: name, value: name
+        }));
 
-    loadImages() {
+        console.log('Recommended app:', this.recommendedApplicationOptions);
+    } else if (error) {
+        console.error('Error fetching recommended applications:', error);
+    }
+}
+    
+loadImages() {
         this.isLoading = true;
         fetchDrawings('', '', '')
             .then(result => {
@@ -93,7 +96,11 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
             });
     }
 
-    @wire(fetchDrawings, { itemFamily: '$selectedItemFamily', itemCategory: '$selectedItemCategory', type: '$selectedType' })
+    @wire(fetchDrawings, { 
+        itemFamily: '$selectedItemFamily', 
+        itemCategory: '$selectedItemCategory', 
+        //recommendedApplicationType: '$selectedRecommendedApplicationType' 
+    })
     wiredDrawings({ data, error }) {
         this.isLoading = true;
         if (data) {
@@ -124,15 +131,16 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
             }
         }
     }
-
+    
     handleItemCategoryChange(event) {
         this.selectedItemCategory = event.detail.value;
     }
-
-    handleTypeChange(event) {
-        this.selectedType = event.detail.value; // Handle Type picklist change
+    
+    handleRecommendedApplicationChange(event) {
+        this.selectedRecommendedApplicationType = event.detail.value;
+        this.loadImages();
     }
-
+    
     handleImageClick(event) {
         const drawingId = event.target.dataset.id; 
         console.log('Image clicked. Drawing ID:', drawingId);
