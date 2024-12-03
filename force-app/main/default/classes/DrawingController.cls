@@ -29,13 +29,38 @@ public with sharing class DrawingController {
     
     @AuraEnabled(cacheable=true)
     public static Drawing__c fetchDrawingById(String drawingId) {
-        Drawing__c drawing = [SELECT Id, Name, Drawing_Image__c, Code__c, Assebly_Drawing__c, Advantages__c,
-                              (SELECT Standard_Features__r.Name, Standard_Features__r.Types__c FROM Drawing_Details__r)
+        Drawing__c drawing = [SELECT Id, Name, Drawing_Image__c, Code__c, Assebly_Drawing__c, Advantages__c
                               FROM Drawing__c WHERE Id = :drawingId];
         
         return drawing;
     }
     
+    @AuraEnabled(cacheable=true)
+    public static Map<String, List<String>> fetchGroupedFeaturesByDrawingId(String drawingId) {
+        List<Drawing_Details__c> drawingDetails = [
+            SELECT Standard_Features__r.Name, Type__c 
+            FROM Drawing_Details__c 
+            WHERE Drawing__c = :drawingId
+        ];
+
+        System.debug('Fetched Drawing Details: ' + drawingDetails);
+
+        Map<String, List<String>> featuresGroupedByType = new Map<String, List<String>>();
+
+        for (Drawing_Details__c detail : drawingDetails) {
+            if (detail.Standard_Features__r != null) {
+                if (!featuresGroupedByType.containsKey(detail.Type__c)) {
+                    featuresGroupedByType.put(detail.Type__c, new List<String>());
+                }
+                featuresGroupedByType.get(detail.Type__c).add(detail.Standard_Features__r.Name);
+            }
+        }
+
+        System.debug('Grouped Features Map: ' + featuresGroupedByType);
+        return featuresGroupedByType;
+    }
+
+
 
 
     @AuraEnabled(cacheable=true)

@@ -110,6 +110,20 @@
                     </ul>
                     <hr />
                 </template>
+
+                <template if:true={featureTypesWithValues}>
+                    <template for:each={featureTypesWithValues} for:item="group">
+                        <div key={group.type}>
+                            <strong>{group.type}</strong>
+                            <ul>
+                                <template for:each={group.features} for:item="feature">
+                                    <li key={feature}>{feature}</li>
+                                </template>
+                            </ul>
+                            <hr />
+                        </div>
+                    </template>
+                </template>
             </div>
         </div>
 

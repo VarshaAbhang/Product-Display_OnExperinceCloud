@@ -3,12 +3,16 @@ import { CurrentPageReference } from 'lightning/navigation';
 import { NavigationMixin } from 'lightning/navigation';
 import fetchDrawingById from '@salesforce/apex/DrawingController.fetchDrawingById';
 import fetchRelatedDrawings from '@salesforce/apex/DrawingController.fetchRelatedDrawings';
+import fetchGroupedFeaturesByDrawingId from '@salesforce/apex/DrawingController.fetchGroupedFeaturesByDrawingId';
 import sendProductRequest from '@salesforce/apex/ProductRequestController.sendProductRequest';
 import getCountryGlobalPicklistValues from '@salesforce/apex/ProductRequestController.getCountryGlobalPicklistValues';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class DrawingDetailsPage extends NavigationMixin(LightningElement) {
-    @track drawings = {};
+    @track drawings = {
+        featuresGroupedByType: {}
+    };
+    @track featureTypesWithValues = [];
     @track drawingId;
     @track relatedDrawings = [];
     @track isModalOpen = false;
@@ -82,9 +86,12 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                     this.drawings = {
                         ...result,
                         code: result.Code__c,
-                        advantages: result.Advantages__c ? result.Advantages__c.split('\n') : []
+                        advantages: result.Advantages__c ? result.Advantages__c.split('\n') : [],
+                        featuresGroupedByType: {}  // Initialize for grouped features
                     };
-                    this.loadRelatedDrawings();
+    
+                    // Fetch grouped features
+                    this.fetchGroupedFeatures();
                 })
                 .catch(error => {
                     console.error('Error fetching drawing details:', error);
@@ -92,6 +99,28 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                 });
         }
     }
+    
+    fetchGroupedFeatures() {
+        fetchGroupedFeaturesByDrawingId({ drawingId: this.drawingId })
+            .then(result => {
+                console.log('Fetched Grouped Features:', JSON.stringify(result));
+                this.drawings.featuresGroupedByType = result || {}; 
+
+                // Precompute feature types with their values
+                this.featureTypesWithValues = Object.keys(this.drawings.featuresGroupedByType).map(type => ({
+                    type,
+                    features: this.drawings.featuresGroupedByType[type]
+                }));
+            })
+            .catch(error => {
+                console.error('Error fetching grouped features:', error);
+                this.showToast('Error', 'Failed to load grouped features.', 'error');
+            });
+    }
+    
+    
+    
+    
 
     loadRelatedDrawings() {
         fetchRelatedDrawings({ drawingId: this.drawingId })
