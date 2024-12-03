@@ -3,12 +3,12 @@ public with sharing class DrawingController {
     public static String getCurrentUserProfile() {
         return [SELECT Profile.Name FROM User WHERE Id = :UserInfo.getUserId()].Profile.Name;
     }
-    
+
     @AuraEnabled(cacheable=true)
-    public static List<Drawing__c> fetchDrawings(String itemFamily, String itemCategory, String type) {
+    public static List<Drawing__c> fetchDrawings(String itemFamily, String itemCategory, String recommendedApplicationType) {
         try {
             String query = 'SELECT Id, Name, Drawing_Image__c, Code__c, Product_Features__c, Assebly_Drawing__c, Advantages__c, Operating_range__c, Materials__c FROM Drawing__c WHERE Public__c = true';
-    
+
             if (!String.isEmpty(itemFamily)) {
                 query += ' AND Item_Family__c = :itemFamily';
             }
@@ -16,9 +16,9 @@ public with sharing class DrawingController {
             if (!String.isEmpty(itemCategory)) {
                 query += ' AND Item_Category__c = :itemCategory';
             }
-    
-            if (!String.isEmpty(type)) {
-                query += ' AND Id IN (SELECT Drawing__c FROM Drawing_Details__c WHERE Type__c = :type)';
+            
+            if (!String.isEmpty(recommendedApplicationType)) {
+                query += ' AND Id IN (SELECT Drawing__c FROM Drawing_Details__c WHERE Standard_Features__r.Name = :recommendedApplicationType)';
             }
     
             return Database.query(query);
@@ -26,6 +26,32 @@ public with sharing class DrawingController {
             throw new AuraHandledException('Error fetching drawings: ' + e.getMessage());
         }
     }
+    
+
+    @AuraEnabled(cacheable=true)
+    public static List<String> fetchRecommendedApplicationNames() {
+    try {
+        List<Drawing_Details__c> drawingDetails = [
+            SELECT Standard_Features__r.Name 
+            FROM Drawing_Details__c 
+            WHERE Type__c = 'Recommended Applications'
+        ];
+
+        List<String> recommendedAppNames = new List<String>();
+        for (Drawing_Details__c detail : drawingDetails) {
+            if (detail.Standard_Features__r != null) {
+                recommendedAppNames.add(detail.Standard_Features__r.Name);
+            }
+        }
+
+        return recommendedAppNames;
+
+    } catch (Exception e) {
+        throw new AuraHandledException('Error fetching recommended applications: ' + e.getMessage());
+    }
+}
+
+
     
     @AuraEnabled(cacheable=true)
     public static Drawing__c fetchDrawingById(String drawingId) {
