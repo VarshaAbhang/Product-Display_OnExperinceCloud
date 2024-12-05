@@ -87,11 +87,12 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                         ...result,
                         code: result.Code__c,
                         advantages: result.Advantages__c ? result.Advantages__c.split('\n') : [],
-                        featuresGroupedByType: {}  // Initialize for grouped features
+                        featuresGroupedByType: {} 
                     };
     
                     // Fetch grouped features
                     this.fetchGroupedFeatures();
+                    this.loadRelatedDrawings();
                 })
                 .catch(error => {
                     console.error('Error fetching drawing details:', error);
@@ -106,7 +107,6 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                 console.log('Fetched Grouped Features:', JSON.stringify(result));
                 this.drawings.featuresGroupedByType = result || {}; 
 
-                // Precompute feature types with their values
                 this.featureTypesWithValues = Object.keys(this.drawings.featuresGroupedByType).map(type => ({
                     type,
                     features: this.drawings.featuresGroupedByType[type]
@@ -117,9 +117,6 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                 this.showToast('Error', 'Failed to load grouped features.', 'error');
             });
     }
-    
-    
-    
     
 
     loadRelatedDrawings() {
@@ -227,18 +224,18 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
     }
 
     handleRelatedImageClick(event) {
-        const drawingId = event.target.dataset.id; // Extract the clicked drawing's ID
+        const drawingId = event.target.dataset.id;
         console.log('Related Image clicked. Drawing ID:', drawingId);
 
         if (drawingId) {
-            // Navigate to the detail page of the clicked related drawing
+            
             this[NavigationMixin.Navigate]({
-                type: 'comm__namedPage', // Change this if you're not using a Community
+                type: 'comm__namedPage', 
                 attributes: {
-                    name: 'Drawing_Details__c', // Developer Name of the target page
+                    name: 'Drawing_Details__c', 
                 },
                 state: {
-                    drawingId: drawingId, // Pass the clicked Drawing ID
+                    drawingId: drawingId, 
                 }
             });
         } else {

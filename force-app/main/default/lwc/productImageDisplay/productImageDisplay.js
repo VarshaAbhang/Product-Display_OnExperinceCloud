@@ -64,25 +64,48 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
 
     @wire(fetchRecommendedApplicationNames)
     wiredRecommendedApplications({ data, error }) {
-    if (data) {
-        this.recommendedApplicationOptions = Array.from(
-            new Map(data.map(item => [item, item])).values()
-        ).map(name => ({
-            label: name, value: name
-        }));
-
-        console.log('Recommended app:', this.recommendedApplicationOptions);
-    } else if (error) {
-        console.error('Error fetching recommended applications:', error);
+        if (data) {
+            this.recommendedApplicationOptions = Array.from(
+                new Map(data.map(item => [item, item])).values()
+            ).map(name => ({
+                label: name, value: name
+            }));
+        } else if (error) {
+            console.error('Error fetching recommended applications:', error);
+        }
     }
-}
-    
-loadImages() {
+
+    // Fetch Drawings dynamically
+    fetchDrawingsData() {
         this.isLoading = true;
-        fetchDrawings('', '', '')
-            .then(result => {
-                this.drawings = result.map(drawing => ({
-                    id: drawing.Id, 
+        fetchDrawings({
+            itemFamily: this.selectedItemFamily || '',
+            itemCategory: this.selectedItemCategory || '',
+            recommendedApplicationType: this.selectedRecommendedApplicationType || ''
+        })
+            .then(data => {
+                this.drawings = data.map(drawing => ({
+                    id: drawing.Id,
+                    imageUrl: drawing.Drawing_Image__c,
+                    code: drawing.Code__c,
+                    features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+                }));
+            })
+            .catch(error => {
+                console.error('Error fetching drawings:', error);
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
+    }
+
+    // Load all images initially
+    loadImages() {
+        this.isLoading = true;
+        fetchDrawings({ itemFamily: '', itemCategory: '', recommendedApplicationType: '' })
+            .then(data => {
+                this.drawings = data.map(drawing => ({
+                    id: drawing.Id,
                     imageUrl: drawing.Drawing_Image__c,
                     code: drawing.Code__c,
                     features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
@@ -96,51 +119,35 @@ loadImages() {
             });
     }
 
-    @wire(fetchDrawings, { 
-        itemFamily: '$selectedItemFamily', 
-        itemCategory: '$selectedItemCategory', 
-        //recommendedApplicationType: '$selectedRecommendedApplicationType' 
-    })
-    wiredDrawings({ data, error }) {
-        this.isLoading = true;
-        if (data) {
-            this.drawings = data.map(drawing => ({
-                id: drawing.Id, 
-                imageUrl: drawing.Drawing_Image__c,
-                code: drawing.Code__c,
-                features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
-            }));
-        } else if (error) {
-            console.error('Error fetching drawings with images:', error);
-        }
-        this.isLoading = false;
-    }
-
+    // Handle Item Family change
     handleItemFamilyChange(event) {
         this.selectedItemFamily = event.detail.value;
-        this.selectedItemCategory = null;
+        this.selectedItemCategory = null; // Reset item category when item family changes
         this.filteredItemCategoryOptions = [];
 
         if (this.itemCategoryOptions.controllerValues) {
             const key = this.itemCategoryOptions.controllerValues[this.selectedItemFamily];
-
             if (key !== undefined) {
                 this.filteredItemCategoryOptions = this.itemCategoryOptions.values.filter(opt => opt.validFor.includes(key));
-            } else {
-                this.filteredItemCategoryOptions = [];
             }
         }
+
+        this.fetchDrawingsData(); // Fetch updated drawings
     }
-    
+
+    // Handle Item Category change
     handleItemCategoryChange(event) {
         this.selectedItemCategory = event.detail.value;
+        this.fetchDrawingsData(); // Fetch updated drawings
     }
-    
+
+    // Handle Recommended Application change
     handleRecommendedApplicationChange(event) {
         this.selectedRecommendedApplicationType = event.detail.value;
-        this.loadImages();
+        this.fetchDrawingsData(); // Fetch updated drawings
     }
-    
+
+    // Handle Image Click for Navigation
     handleImageClick(event) {
         const drawingId = event.target.dataset.id; 
         console.log('Image clicked. Drawing ID:', drawingId);
