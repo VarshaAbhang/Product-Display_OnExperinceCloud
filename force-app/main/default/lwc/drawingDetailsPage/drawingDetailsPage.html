@@ -110,11 +110,11 @@
                     </ul>
                     <hr />
                 </template>
-
+                
                 <template if:true={featureTypesWithValues}>
                     <template for:each={featureTypesWithValues} for:item="group">
                         <div key={group.type}>
-                            <strong>{group.type}</strong>
+                            <div class="slds-text-heading_medium slds-m-top_small">{group.type}</div>
                             <ul>
                                 <template for:each={group.features} for:item="feature">
                                     <li key={feature}>{feature}</li>
@@ -128,29 +128,32 @@
         </div>
 
         <template if:true={relatedDrawings}>
-            <div class="slds-text-heading_medium slds-m-top_small">Similar products</div>
-            <div class="related-grid-spacing slds-grid slds-wrap">
-                <template for:each={relatedDrawings} for:item="relatedDrawing">
-                    <div key={relatedDrawing.Id} class="slds-col slds-size_1-of-4 slds-p-around_small">
-                        <template if:true={relatedDrawing.Drawing_Image__c}>
-                            <img src={relatedDrawing.Drawing_Image__c} 
-                                 class="custom-image" 
-                                 data-id={relatedDrawing.Id} 
-                                 onclick={handleRelatedImageClick} />
-                                 
-                            <div class="slds-m-top_small">{relatedDrawing.Code__c}</div>
-                        </template>
-                    </div>
-                </template>
+            <div class="similar-products-section">
+                <div class="slds-text-heading_medium slds-m-top_small">Similar products</div>
+                <div class="related-grid-spacing slds-grid slds-wrap">
+                    <template for:each={relatedDrawings} for:item="relatedDrawing">
+                        <div key={relatedDrawing.Id} class="slds-col slds-size_1-of-4 slds-p-around_small">
+                            <template if:true={relatedDrawing.Drawing_Image__c}>
+                                <img src={relatedDrawing.Drawing_Image__c} 
+                                     class="custom-image" 
+                                     data-id={relatedDrawing.Id} 
+                                     onclick={handleRelatedImageClick} />
+                                     
+                                <div class="slds-m-top_small slds-text-heading_small">{relatedDrawing.Code__c}</div>
+                            </template>
+                        </div>
+                    </template>
+                </div>
             </div>
         </template>
         
-
-        <lightning-button
-            label="Back to the overview"
-            variant="brand"
-            icon-name="utility:back"
-            onclick={handleBackpage}>
-        </lightning-button>
+        <div class="similar-products-section">
+            <lightning-button
+                label="Back to the overview"
+                variant="brand"
+                icon-name="utility:back"
+                onclick={handleBackpage}>
+            </lightning-button>
+        </div>
     </template>
 </template>

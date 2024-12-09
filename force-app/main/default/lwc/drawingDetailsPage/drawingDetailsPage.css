@@ -20,6 +20,13 @@
 .slds-text-heading_medium {
     font-size: 1.5rem; /* Large text for the code */
     font-weight: bold; /* Makes the code bold */
+    color: black;
+}
+.slds-text-heading_small {
+    font-size: 1.5rem; /* Large text for the code */
+    font-weight: bold; /* Makes the code bold */
+    margin-left: 35px;
+    color: black;
 }
 
 .custom-margin {
@@ -93,4 +100,24 @@ li {
 .related-grid-spacing {
     margin-top: 30px; /* Adjust the value as needed for your layout */
 }
+
+.similar-products-section {
+    background-color: #f2f6f9;
+    padding-top: 60px;
+    padding-bottom: 60px;
+    padding-left: 50px;
+    padding-right: 50px;
+    margin: 0;
+    width: 100%;
+    max-width: 100vw; 
+    box-sizing: border-box; 
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden; 
+}
+
 

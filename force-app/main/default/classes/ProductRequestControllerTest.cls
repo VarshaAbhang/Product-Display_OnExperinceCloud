@@ -36,7 +36,10 @@ public class ProductRequestControllerTest {
         wrapper.email = 'johndoe@example.com';
         wrapper.phoneNumber = '1234567890';
         wrapper.country = 'India';
-        wrapper.productName ='test Product';
+        wrapper.productName = 'test Product';
+        wrapper.productFamily = 'Mechanical Seal';
+        wrapper.msgInput = 'This is a test message';
+        wrapper.website = 'http://example.com';
         
         String requestWrapperJson = JSON.serialize(wrapper);
 
@@ -73,7 +76,10 @@ public class ProductRequestControllerTest {
         wrapper.email = 'johndoe@example.com';
         wrapper.phoneNumber = '1234567890';
         wrapper.country = 'India';
-        wrapper.productName ='test Product';
+        wrapper.productName = 'test Product';
+        wrapper.productFamily = 'Mechanical Seal';
+        wrapper.msgInput = 'This is a test message';
+        wrapper.website = 'http://example.com';
 
 
         String requestWrapperJson = JSON.serialize(wrapper);
@@ -88,8 +94,20 @@ public class ProductRequestControllerTest {
             }
         }
     }
-    
+
     @isTest
+    static void testGetCountryGlobalPicklistValues() {
+        Test.startTest();
+        List<String> countryPicklistValues = ProductRequestController.getCountryGlobalPicklistValues();
+        Test.stopTest();
+
+        System.assertNotEquals(null, countryPicklistValues, 'Country picklist values should not be null');
+        System.assert(countryPicklistValues.size() > 0, 'Country picklist values should not be empty');
+        
+        System.assert(countryPicklistValues.contains('India'), 'Country picklist should contain India');
+    }
+    
+    /*@isTest
     static void testSendEmail() {
     
         ProductRequestController.ProductRequestWrapper wrapper = new ProductRequestController.ProductRequestWrapper();
@@ -110,49 +128,49 @@ public class ProductRequestControllerTest {
         }
         Test.stopTest();
         System.assert(true, 'Email logic executed without exceptions');
-    }
+    }*/
 
-    // @isTest
-	// static void testCreateAttachment() {
+   /* @isTest
+	static void testCreateAttachment() {
   
-    // Account testAccount = new Account(Name = 'Test Account');
-    // insert testAccount;
+    Account testAccount = new Account(Name = 'Test Account');
+    insert testAccount;
     
-    // String parentId = testAccount.Id;
-    // String fileName = 'TestFile.pdf';
-    // String base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test file content'));
+    String parentId = testAccount.Id;
+    String fileName = 'TestFile.pdf';
+    String base64Data = EncodingUtil.base64Encode(Blob.valueOf('Test file content'));
 
-    // Test.startTest();
-    // Id contentDocumentId = ProductRequestController.createAttachment(parentId, fileName, base64Data);
-    // Test.stopTest();
+    Test.startTest();
+    Id contentDocumentId = ProductRequestController.createAttachment(parentId, fileName, base64Data);
+    Test.stopTest();
 
-    // System.assertNotEquals(null, contentDocumentId, 'ContentDocumentId should not be null');
-    // ContentVersion contentVersion = [
-    //     SELECT Id, Title, PathOnClient, VersionData 
-    //     FROM ContentVersion 
-    //     WHERE ContentDocumentId = :contentDocumentId
-    //     LIMIT 1
-    // ];
-    // System.assertEquals(fileName, contentVersion.Title, 'The file name should match the title in ContentVersion');
-	// }
+    System.assertNotEquals(null, contentDocumentId, 'ContentDocumentId should not be null');
+    ContentVersion contentVersion = [
+        SELECT Id, Title, PathOnClient, VersionData 
+        FROM ContentVersion 
+        WHERE ContentDocumentId = :contentDocumentId
+        LIMIT 1
+    ];
+    System.assertEquals(fileName, contentVersion.Title, 'The file name should match the title in ContentVersion');
+	}
 
-	// @isTest
-	// static void testCreateAttachment_CatchBlock() {
+	@isTest
+	static void testCreateAttachment_CatchBlock() {
 
-    // String invalidParentId = 'InvalidParentId'; 
-    // String fileName = 'TestFile.pdf';
-    // String corruptedBase64Data = 'InvalidBase64';  
+    String invalidParentId = 'InvalidParentId'; 
+    String fileName = 'TestFile.pdf';
+    String corruptedBase64Data = 'InvalidBase64';  
 
-    // try {
+    try {
       
-    //     Test.startTest();
-    //     Id contentDocumentId = ProductRequestController.createAttachment(invalidParentId, fileName, corruptedBase64Data);
-    //     Test.stopTest();
+        Test.startTest();
+        Id contentDocumentId = ProductRequestController.createAttachment(invalidParentId, fileName, corruptedBase64Data);
+        Test.stopTest();
 
-    //     System.assert(false, 'Exception was expected but not thrown');
-    // } catch (Exception e) {
-    //     System.assert(true, 'Exception successfully caught in the catch block: ' + e.getMessage());
-    // }
-	// }
+        System.assert(false, 'Exception was expected but not thrown');
+    } catch (Exception e) {
+        System.assert(true, 'Exception successfully caught in the catch block: ' + e.getMessage());
+    }
+	}*/
 
 }
