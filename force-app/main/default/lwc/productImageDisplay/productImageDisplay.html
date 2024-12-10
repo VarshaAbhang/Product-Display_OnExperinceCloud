@@ -34,25 +34,38 @@
             </lightning-combobox>
         </div>
 
-        <template if:true={drawings}>
-            <template for:each={drawings} for:item="drawing">
-                <template if:true={drawing.imageUrl}>
-                    <div key={drawing.id} class="slds-p-around_small">
-                        <img src={drawing.imageUrl} class="custom-image" 
-                            data-id={drawing.id} 
-                            onclick={handleImageClick}/>
+        <!-- Drawings Display -->
+        <template if:true={drawings.length}>
+            <div class="slds-grid slds-wrap">
+                <template for:each={drawings} for:item="drawing">
+                    <template if:true={drawing.imageUrl}>
+                        <div key={drawing.id} class="slds-col slds-size_1-of-3 slds-p-around_small">
+                            <img src={drawing.imageUrl} class="custom-image" 
+                                data-id={drawing.id} 
+                                onclick={handleImageClick}/>
 
-                        <div class="slds-text-heading_medium slds-m-top_small">{drawing.code}</div> 
-                        <ul class="slds-m-top_x-small">
-                            <template for:each={drawing.features} for:item="feature">
-                                <li key={feature} class="slds-text-body_regular">{feature}</li>
-                            </template>
-                        </ul>
-                    </div>
+                            <div class="slds-text-heading_medium slds-m-top_small">{drawing.code}</div> 
+                            <ul class="slds-m-top_x-small">
+                                <template for:each={drawing.features} for:item="feature">
+                                    <li key={feature} class="slds-text-body_regular">{feature}</li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
                 </template>
-            </template>
-        </template> 
-        
+            </div>
+
+            <!-- Pagination Controls - Only visible if there are drawings -->
+            <div class="pagination-container">
+                <div class="slds-grid slds-align_absolute-center slds-m-top_medium">
+                    <lightning-button icon-name="utility:back" alternative-text="Previous" size="small" onclick={handlePreviousPage} disabled={isPreviousDisabled}></lightning-button>
+                    <span class="slds-p-horizontal_small">Page {pageNumber} of {totalPages}</span>
+                    <lightning-button icon-name="utility:forward" alternative-text="Next" size="small" onclick={handleNextPage} disabled={isNextDisabled}></lightning-button>
+                </div>
+            </div>
+        </template>
+
+        <!-- No Drawings Found Message -->
         <template if:false={drawings.length}>
             <div>No drawings found...</div>
         </template>

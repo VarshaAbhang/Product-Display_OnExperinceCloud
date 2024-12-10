@@ -20,6 +20,11 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @track drawings = [];
     @track userProfile;
     @track isLoading = false;
+    
+    // Pagination state
+    @track pageSize = 18;
+    @track pageNumber = 1;
+    @track totalPages = 1;
 
     @wire(getCurrentUserProfile)
     wiredUserProfile({ data, error }) {
@@ -75,34 +80,40 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
         }
     }
 
-    // Fetch Drawings dynamically
+    // Fetch Drawings dynamically with pagination
     fetchDrawingsData() {
         this.isLoading = true;
         fetchDrawings({
             itemFamily: this.selectedItemFamily || '',
             itemCategory: this.selectedItemCategory || '',
-            recommendedApplicationType: this.selectedRecommendedApplicationType || ''
+            recommendedApplicationType: this.selectedRecommendedApplicationType || '',
+            pageNumber: this.pageNumber,
+            pageSize: this.pageSize
         })
-            .then(data => {
-                this.drawings = data.map(drawing => ({
-                    id: drawing.Id,
-                    imageUrl: drawing.Drawing_Image__c,
-                    code: drawing.Code__c,
-                    features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
-                }));
-            })
-            .catch(error => {
-                console.error('Error fetching drawings:', error);
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
+        .then(data => {
+            this.drawings = data.map(drawing => ({
+                id: drawing.Id,
+                imageUrl: drawing.Drawing_Image__c,
+                code: drawing.Code__c,
+                features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+            }));
+    
+            const totalRecords = data.length;
+            this.totalPages = totalRecords > 0 ? Math.ceil(totalRecords / this.pageSize) : 1;
+            console.log('Total Pages:', this.totalPages);
+        })
+        .catch(error => {
+            console.error('Error fetching drawings:', error);
+        })
+        .finally(() => {
+            this.isLoading = false;
+        });
     }
-
+    
     // Load all images initially
     loadImages() {
         this.isLoading = true;
-        fetchDrawings({ itemFamily: '', itemCategory: '', recommendedApplicationType: '' })
+        fetchDrawings({ itemFamily: '', itemCategory: '', recommendedApplicationType: '', pageNumber: this.pageNumber, pageSize: this.pageSize })
             .then(data => {
                 this.drawings = data.map(drawing => ({
                     id: drawing.Id,
@@ -110,6 +121,10 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
                     code: drawing.Code__c,
                     features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
                 }));
+                const totalRecords = data.length;
+                this.totalPages = totalRecords > 0 ? Math.ceil(totalRecords / this.pageSize) : 1;
+    
+            console.log('Total Pages loadImages', this.totalPages);
             })
             .catch(error => {
                 console.error('Error fetching all drawings:', error);
@@ -146,6 +161,30 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
         this.selectedRecommendedApplicationType = event.detail.value;
         this.fetchDrawingsData(); // Fetch updated drawings
     }
+
+    // Handle Next Page
+    handleNextPage() {
+        if (this.pageNumber < this.totalPages) {
+            this.pageNumber++;
+            this.fetchDrawingsData();
+        }
+    }
+
+    // Handle Previous Page
+    handlePreviousPage() {
+        if (this.pageNumber > 1) {
+            this.pageNumber--;
+            this.fetchDrawingsData();
+        }
+    }
+
+    get isPreviousDisabled() {
+        return this.pageNumber === 1;
+    }
+    
+    get isNextDisabled() {
+        return this.pageNumber === this.totalPages;
+    }    
 
     // Handle Image Click for Navigation
     handleImageClick(event) {

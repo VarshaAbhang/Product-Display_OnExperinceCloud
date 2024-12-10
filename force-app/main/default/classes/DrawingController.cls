@@ -5,9 +5,9 @@ public with sharing class DrawingController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Drawing__c> fetchDrawings(String itemFamily, String itemCategory, String recommendedApplicationType) {
+    public static List<Drawing__c> fetchDrawings(String itemFamily, String itemCategory, String recommendedApplicationType, Integer pageNumber, Integer pageSize) {
         try {
-            String query = 'SELECT Id, Name, Drawing_Image__c, Code__c, Product_Features__c, Assebly_Drawing__c, Advantages__c, Operating_range__c, Materials__c FROM Drawing__c WHERE Public__c = true';
+            String query = 'SELECT Id, Name, Drawing_Image__c, Code__c, Assebly_Drawing__c, Advantages__c FROM Drawing__c WHERE Public__c = true';
 
             if (!String.isEmpty(itemFamily)) {
                 query += ' AND Item_Family__c = :itemFamily';
@@ -16,10 +16,14 @@ public with sharing class DrawingController {
             if (!String.isEmpty(itemCategory)) {
                 query += ' AND Item_Category__c = :itemCategory';
             }
-            
+    
             if (!String.isEmpty(recommendedApplicationType)) {
                 query += ' AND Id IN (SELECT Drawing__c FROM Drawing_Details__c WHERE Standard_Features__r.Name = :recommendedApplicationType)';
             }
+    
+            // Pagination logic
+            Integer offset = (pageNumber - 1) * pageSize;
+            query += ' LIMIT :pageSize OFFSET :offset';
     
             return Database.query(query);
         } catch (Exception e) {
@@ -30,26 +34,26 @@ public with sharing class DrawingController {
 
     @AuraEnabled(cacheable=true)
     public static List<String> fetchRecommendedApplicationNames() {
-    try {
-        List<Drawing_Details__c> drawingDetails = [
-            SELECT Standard_Features__r.Name 
-            FROM Drawing_Details__c 
-            WHERE Type__c = 'Recommended Applications'
-        ];
+        try {
+            List<Drawing_Details__c> drawingDetails = [
+                SELECT Standard_Features__r.Name 
+                FROM Drawing_Details__c 
+                WHERE Type__c = 'Recommended Applications'
+            ];
 
-        List<String> recommendedAppNames = new List<String>();
-        for (Drawing_Details__c detail : drawingDetails) {
-            if (detail.Standard_Features__r != null) {
-                recommendedAppNames.add(detail.Standard_Features__r.Name);
+            List<String> recommendedAppNames = new List<String>();
+            for (Drawing_Details__c detail : drawingDetails) {
+                if (detail.Standard_Features__r != null) {
+                    recommendedAppNames.add(detail.Standard_Features__r.Name);
+                }
             }
+
+            return recommendedAppNames;
+
+        } catch (Exception e) {
+            throw new AuraHandledException('Error fetching recommended applications: ' + e.getMessage());
         }
-
-        return recommendedAppNames;
-
-    } catch (Exception e) {
-        throw new AuraHandledException('Error fetching recommended applications: ' + e.getMessage());
     }
-}
 
 
     
@@ -94,7 +98,7 @@ public with sharing class DrawingController {
    
         Drawing__c selectedDrawing = [SELECT Item_Category__c FROM Drawing__c WHERE Id = :drawingId LIMIT 1];
         
-        return [SELECT Id, Name, Drawing_Image__c, Code__c, Product_Features__c 
+        return [SELECT Id, Name, Drawing_Image__c, Code__c 
                 FROM Drawing__c 
                 WHERE Item_Category__c = :selectedDrawing.Item_Category__c AND Id != :drawingId];
     }
