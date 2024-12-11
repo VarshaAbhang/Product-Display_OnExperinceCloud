@@ -121,10 +121,13 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
                     code: drawing.Code__c,
                     features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
                 }));
+                // const totalImages = this.drawings.filter(drawing => drawing.imageUrl).length;
+                // console.log('Total images with Drawing_Image__c:', totalImages);
+
                 const totalRecords = data.length;
                 this.totalPages = totalRecords > 0 ? Math.ceil(totalRecords / this.pageSize) : 1;
     
-            console.log('Total Pages loadImages', this.totalPages);
+           // console.log('Total Pages loadImages', this.totalPages);
             })
             .catch(error => {
                 console.error('Error fetching all drawings:', error);

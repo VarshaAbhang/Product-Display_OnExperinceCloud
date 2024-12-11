@@ -118,7 +118,7 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
     fetchGroupedFeatures() {
         fetchGroupedFeaturesByDrawingId({ drawingId: this.drawingId })
             .then(result => {
-                console.log('Fetched Grouped Features:', JSON.stringify(result));
+                //console.log('Fetched Grouped Features:', JSON.stringify(result));
                 this.drawings.featuresGroupedByType = result || {};
 
                 this.featureTypesWithValues = Object.keys(this.drawings.featuresGroupedByType).map(type => ({
@@ -138,7 +138,7 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
         .then(result => {
             this.relatedDrawings = result;
             this.totalPages = Math.ceil(this.relatedDrawings.length / this.itemsPerPage); 
-            console.log('Related Drawings Length:', this.relatedDrawings.length);
+            //console.log('Related Drawings Length:', this.relatedDrawings.length);
         })
         .catch(error => {
             console.error('Error fetching related drawings:', error);
@@ -241,7 +241,7 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
 
     handleRelatedImageClick(event) {
         const drawingId = event.target.dataset.id;
-        console.log('Related Image clicked. Drawing ID:', drawingId);
+        //console.log('Related Image clicked. Drawing ID:', drawingId);
 
         if (drawingId) {
             
