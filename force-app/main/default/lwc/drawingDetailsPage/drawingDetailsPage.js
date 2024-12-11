@@ -32,6 +32,11 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
         website: ''
     };
 
+    // Pagination variables
+    @track currentPage = 1;
+    @track itemsPerPage = 4;  // Adjust based on your requirement
+    @track totalPages = 0;
+
     get titleOptions() {
         return [
             { label: 'Mr.', value: 'Mr.' },
@@ -47,10 +52,19 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
             { label: 'Mechanical Seal', value: 'Mechanical Seal' },
             { label: 'MS Spares', value: 'MS Spares' },
             { label: 'Seal Support Systems', value: 'Seal Support Systems' }
-
         ];
     }
- 
+
+    get paginatedDrawings() {
+        if (!this.relatedDrawings || this.relatedDrawings.length === 0) {
+            return [];
+        }
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = this.currentPage * this.itemsPerPage;
+        return this.relatedDrawings.slice(start, end);
+    }
+    
+
     @wire(CurrentPageReference)
     currentPageReference(pageRef) {
         if (pageRef && pageRef.state && pageRef.state.drawingId) {
@@ -87,9 +101,9 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                         ...result,
                         code: result.Code__c,
                         advantages: result.Advantages__c ? result.Advantages__c.split('\n') : [],
-                        featuresGroupedByType: {} 
+                        featuresGroupedByType: {}
                     };
-    
+
                     // Fetch grouped features
                     this.fetchGroupedFeatures();
                     this.loadRelatedDrawings();
@@ -100,12 +114,12 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
                 });
         }
     }
-    
+
     fetchGroupedFeatures() {
         fetchGroupedFeaturesByDrawingId({ drawingId: this.drawingId })
             .then(result => {
                 console.log('Fetched Grouped Features:', JSON.stringify(result));
-                this.drawings.featuresGroupedByType = result || {}; 
+                this.drawings.featuresGroupedByType = result || {};
 
                 this.featureTypesWithValues = Object.keys(this.drawings.featuresGroupedByType).map(type => ({
                     type,
@@ -120,16 +134,18 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
     
 
     loadRelatedDrawings() {
-        fetchRelatedDrawings({ drawingId: this.drawingId })
-            .then(result => {
-                this.relatedDrawings = result;
-            })
-            .catch(error => {
-                console.error('Error fetching related drawings:', error);
-                this.showToast('Error', 'Failed to load related drawings.', 'error');
-            });
-    }
-
+    fetchRelatedDrawings({ drawingId: this.drawingId })
+        .then(result => {
+            this.relatedDrawings = result;
+            this.totalPages = Math.ceil(this.relatedDrawings.length / this.itemsPerPage); 
+            console.log('Related Drawings Length:', this.relatedDrawings.length);
+        })
+        .catch(error => {
+            console.error('Error fetching related drawings:', error);
+            this.showToast('Error', 'Failed to load related drawings.', 'error');
+        });
+}
+    
     handleRequestProduct() {
         this.isModalOpen = true;
     }
@@ -154,17 +170,17 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
             this.showToast('Error', 'Please complete all required fields.', 'error');
             return;
         }
-    
+
         this.isLoading = true;
-    
+
         try {
             const result = await sendProductRequest({ requestWrapper: JSON.stringify(this.formData) });
-            
+
             if (result) {
                 console.log('Product request sent successfully');
                 this.showToast('Success', 'Product request sent successfully!', 'success');
-                this.resetForm(); 
-                this.isModalOpen = false; 
+                this.resetForm();
+                this.isModalOpen = false;
             } else {
                 this.showToast('Error', 'Failed to send product request.', 'error');
             }
@@ -206,8 +222,8 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
 
     handleBackpage()
     {
-    const drawingId = this.drawings.Id;
-        
+        const drawingId = this.drawings.Id;
+
         if (drawingId) {
             this[NavigationMixin.Navigate]({
                 type: 'comm__namedPage',
@@ -230,7 +246,7 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
         if (drawingId) {
             
             this[NavigationMixin.Navigate]({
-                type: 'comm__namedPage', 
+                type: 'comm__namedPage',
                 attributes: {
                     name: 'Drawing_Details__c', 
                 },
@@ -242,4 +258,26 @@ export default class DrawingDetailsPage extends NavigationMixin(LightningElement
             console.error('Drawing ID not found in the clicked image.');
         }
     }
+
+    // Pagination methods
+    handleNextPage() {
+        if (this.currentPage < this.totalPages) {
+            this.currentPage++;
+        }
+    }
+
+    handlePreviousPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+        }
+    }
+
+    get isPreviousDisabled() {
+        return this.currentPage === 1;  
+    }
+    
+    get isNextDisabled() {
+        return this.currentPage === this.totalPages; 
+    }
+      
 }

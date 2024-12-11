@@ -126,27 +126,56 @@
                 </template>
             </div>
         </div>
-
-        <template if:true={relatedDrawings}>
+        <template if:true={relatedDrawings.length}>
             <div class="similar-products-section">
                 <div class="slds-text-heading_medium slds-m-top_small">Similar products</div>
+                
+                <!-- Image Grid -->
                 <div class="related-grid-spacing slds-grid slds-wrap">
-                    <template for:each={relatedDrawings} for:item="relatedDrawing">
+                    <template for:each={paginatedDrawings} for:item="relatedDrawing">
                         <div key={relatedDrawing.Id} class="slds-col slds-size_1-of-4 slds-p-around_small">
                             <template if:true={relatedDrawing.Drawing_Image__c}>
                                 <img src={relatedDrawing.Drawing_Image__c} 
-                                     class="custom-image" 
-                                     data-id={relatedDrawing.Id} 
-                                     onclick={handleRelatedImageClick} />
-                                     
+                                    class="custom-images" 
+                                    data-id={relatedDrawing.Id} 
+                                    onclick={handleRelatedImageClick} />
                                 <div class="slds-m-top_small slds-text-heading_small">{relatedDrawing.Code__c}</div>
                             </template>
                         </div>
                     </template>
                 </div>
+
+                <!-- Pagination Controls -->
+                <div class="pagination-controls slds-m-top_medium">
+                    <div class="slds-grid slds-align_absolute-center slds-m-top_medium">
+                        <!-- Previous Button with spacing -->
+                        <lightning-button 
+                            icon-name="utility:back" 
+                            alternative-text="Previous" 
+                            size="small" 
+                            onclick={handlePreviousPage} 
+                            disabled={isPreviousDisabled} 
+                            class="slds-m-right_small">
+                        </lightning-button>
+
+                        <!-- Next Button with spacing -->
+                        <lightning-button 
+                            icon-name="utility:forward" 
+                            alternative-text="Next" 
+                            size="small" 
+                            onclick={handleNextPage} 
+                            disabled={isNextDisabled} 
+                            class="slds-m-left_small">
+                        </lightning-button>
+                    </div>
+                </div>
             </div>
         </template>
-        
+
+        <template if:false={relatedDrawings.length}>
+            <div>No related drawings found...</div>
+        </template>
+
         <div class="similar-products-section">
             <lightning-button
                 label="Back to the overview"

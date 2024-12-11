@@ -6,9 +6,9 @@
 
 .custom-image {
     cursor: pointer;
-    max-width: 100%; 
+    max-width: 200px; 
     max-height: 200px; 
-    object-fit: cover; 
+    object-fit: contain; 
     object-position: center;
 }
 

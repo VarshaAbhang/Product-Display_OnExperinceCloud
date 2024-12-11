@@ -14,8 +14,8 @@
 .slds-col {
     overflow: hidden;                /* Ensure the scaled image doesn't overflow outside the container */
     position: relative;
+    padding: 0;  
 }
-
 
 .slds-text-heading_medium {
     font-size: 1.5rem; /* Large text for the code */
@@ -25,7 +25,7 @@
 .slds-text-heading_small {
     font-size: 1.5rem; /* Large text for the code */
     font-weight: bold; /* Makes the code bold */
-    margin-left: 35px;
+    text-align: center;
     color: black;
 }
 
@@ -89,12 +89,10 @@ li {
 }
 
 .custom-images {
-    width: auto; /* Adjust as needed for your layout */
-    height: auto;
-    object-fit: cover; /* Ensures image fills container without distortion */
-    border-radius: 5px; /* Optional: rounded corners */
-    display: block;
-    margin: 0 auto;
+    width: 100%;              /* Make sure images occupy the full width */
+    height: 200px;            /* Fixed height for all images */
+    object-fit: contain;      /* Ensures the image doesn't get stretched */
+    display: block;           /* Ensure images are block-level */
 }
 
 .related-grid-spacing {
@@ -121,3 +119,14 @@ html, body {
 }
 
 
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-info {
+    font-size: 1rem;
+    font-weight: bold;
+}
