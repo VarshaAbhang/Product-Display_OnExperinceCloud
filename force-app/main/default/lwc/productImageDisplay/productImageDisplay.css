@@ -1,17 +1,17 @@
 .slds-col {
-    flex: 1 1 calc(20% - 1rem); /* Adjust to fit 5 columns per row */
-    margin: 0.5rem; 
+    flex: 1 1 calc(20% - 1rem); 
+    margin: 0.5rem;
     box-sizing: border-box;
 }
 
 .custom-image {
     cursor: pointer;
-    max-width: 100%; /* Ensure image fits within the column width */
-    max-height: 200px; /* Maintain maximum height for the image */
-    object-fit: contain; 
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
     object-position: center;
-    display: block; /* Ensures image is displayed as a block element */
-    margin: 0 auto; /* Centers the image within its container */
+    display: block;
+    margin: 0 auto;
 }
 
 
@@ -30,6 +30,7 @@ li {
 }
 
 .pagination-container {
+    text-align: center;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -38,4 +39,5 @@ li {
     padding: 10px 0;
     position: sticky;
     bottom: 0; /* Keeps pagination at the bottom */
+    margin-top: 1rem;
 }

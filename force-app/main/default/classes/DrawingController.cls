@@ -5,7 +5,7 @@ public with sharing class DrawingController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<Drawing__c> fetchDrawings(String itemFamily, String itemCategory, String recommendedApplicationType, Integer pageNumber, Integer pageSize) {
+    public static List<Drawing__c> fetchDrawings(String itemFamily, String itemCategory, String recommendedApplicationType, String productType, Integer pageNumber, Integer pageSize) {
         try {
             String query = 'SELECT Id, Name, Drawing_Image__c, Code__c, Assebly_Drawing__c, Advantages__c FROM Drawing__c WHERE Public__c = true';
 
@@ -20,7 +20,11 @@ public with sharing class DrawingController {
             if (!String.isEmpty(recommendedApplicationType)) {
                 query += ' AND Id IN (SELECT Drawing__c FROM Drawing_Details__c WHERE Standard_Features__r.Name = :recommendedApplicationType)';
             }
-    
+            
+            if(!String.isEmpty(productType)){
+                query += ' AND Code__c = :productType';
+            }
+
             // Pagination logic
             Integer offset = (pageNumber - 1) * pageSize;
             query += ' LIMIT :pageSize OFFSET :offset';
@@ -55,6 +59,28 @@ public with sharing class DrawingController {
         }
     }
 
+    @AuraEnabled (cacheable=true)
+    public static List<String> fetchProductTypeValues() {
+        try {
+            List<Drawing__c> drawingList = [
+                SELECT Code__c 
+                FROM Drawing__c 
+                WHERE Public__c = true
+            ];
+
+            List<String> drawingListNames = new List<String>();
+            for (Drawing__c Names : drawingList) {
+                if (Names.Code__c != null) {
+                    drawingListNames.add(Names.Code__c);
+                }
+            }
+
+            return drawingListNames;
+        } catch (Exception e) {
+            System.debug('Error fetching product type values: ' + e.getMessage());
+            throw new AuraHandledException('Error fetching Drawing Names');
+        }
+    }
 
     
     @AuraEnabled(cacheable=true)

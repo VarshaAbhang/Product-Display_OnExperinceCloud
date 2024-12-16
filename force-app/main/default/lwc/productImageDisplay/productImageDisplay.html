@@ -1,7 +1,7 @@
 <template>
     <div class="slds-grid slds-wrap slds-p-around_medium">
         <!-- Item Family Dropdown -->
-        <div class="slds-col slds-size_1-of-3 slds-p-around_small">
+        <div class="slds-col slds-size_1-of-4 slds-p-around_small">
             <lightning-combobox
                 name="itemFamily"
                 label="Item Family"
@@ -13,7 +13,7 @@
         </div>
 
         <!-- Item Category Dropdown -->
-        <div class="slds-col slds-size_1-of-3 slds-p-around_small">
+        <div class="slds-col slds-size_1-of-4 slds-p-around_small">
             <lightning-combobox
                 name="itemCategory"
                 label="Item Category"
@@ -25,26 +25,41 @@
         </div>
 
         <!-- Type Dropdown -->
-        <div class="slds-col slds-size_1-of-3 slds-p-around_small">
+        <div class="slds-col slds-size_1-of-4 slds-p-around_small">
             <lightning-combobox
                 label="Recommended Application"
                 value={selectedRecommendedApplicationType}
+                placeholder="Select Recommended Application Type"
                 options={recommendedApplicationOptions}
                 onchange={handleRecommendedApplicationChange}>
             </lightning-combobox>
         </div>
 
+        <div class="slds-col slds-size_1-of-4 slds-p-around_small">
+            <lightning-combobox
+                label="Product Name"
+                value={selectedProductType}
+                placeholder="Select Product Name"
+                options={productTypeOptions}
+                onchange={handleproductTypeChange}>
+            </lightning-combobox>
+        </div>
+    </div>
+
+    <div class="slds-grid slds-wrap slds-p-around_medium">
         <!-- Drawings Display -->
         <template if:true={drawings.length}>
             <div class="slds-grid slds-wrap">
                 <template for:each={drawings} for:item="drawing">
                     <template if:true={drawing.imageUrl}>
-                        <div key={drawing.id} class="slds-col slds-size_1-of-5 slds-p-around_small">
-                            <img src={drawing.imageUrl} class="custom-image" 
+                        <div key={drawing.id} 
+                            class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-large-size_1-of-5 slds-p-around_small">
+                            <img src={drawing.imageUrl} 
+                                class="custom-image" 
                                 data-id={drawing.id} 
                                 onclick={handleImageClick}/>
-
-                            <div class="slds-text-heading_medium slds-m-top_small">{drawing.code}</div> 
+    
+                            <div class="slds-text-heading_medium slds-m-top_small">{drawing.code}</div>
                             <ul class="slds-m-top_x-small">
                                 <template for:each={drawing.advantages} for:item="advantage">
                                     <li key={advantage} class="slds-text-body_regular">{advantage}</li>
@@ -54,7 +69,7 @@
                     </template>
                 </template>
             </div>
-
+    
             <!-- Pagination Controls - Only visible if there are drawings -->
             <div class="pagination-container">
                 <div class="slds-grid slds-align_absolute-center slds-m-top_medium">
@@ -64,10 +79,10 @@
                 </div>
             </div>
         </template>
-
+    
         <!-- No Drawings Found Message -->
         <template if:false={drawings.length}>
-            <div>No drawings found...</div>
+            <div class="slds-text-align_center slds-text-heading_medium">No drawings found...</div>
         </template>
     </div>
 </template>

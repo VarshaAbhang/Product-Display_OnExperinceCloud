@@ -3,6 +3,7 @@ import { NavigationMixin } from "lightning/navigation";
 import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
 import fetchDrawings from '@salesforce/apex/DrawingController.fetchDrawings';
 import fetchRecommendedApplicationNames from '@salesforce/apex/DrawingController.fetchRecommendedApplicationNames';
+import fetchProductTypeValues from '@salesforce/apex/DrawingController.fetchProductTypeValues';
 import getCurrentUserProfile from '@salesforce/apex/DrawingController.getCurrentUserProfile';
 import DRAWING_OBJECT from '@salesforce/schema/Drawing__c'; 
 import DRAWING_DETAILS_OBJECT from '@salesforce/schema/Drawing_Details__c';
@@ -17,6 +18,8 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @track selectedItemCategory;
     @track recommendedApplicationOptions = [];
     @track selectedRecommendedApplicationType;
+    @track selectedProductType;
+    @track productTypeOptions = [];
     @track drawings = [];
     @track userProfile;
     @track isLoading = false;
@@ -47,7 +50,7 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
         if (data) {
             this.itemFamilyOptions = data.values.map(item => ({ label: item.label, value: item.value }));
 
-            // // Filter out "MS Spares" for certain profiles
+            // Filter out "MS Spares" for certain profiles
             // if (this.userProfile === 'System Administrator' || this.userProfile === 'Products Profile') {
             //     this.itemFamilyOptions = this.itemFamilyOptions.filter(option => option.value !== 'MS Spares');
             // }
@@ -80,6 +83,19 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
         }
     }
 
+    @wire(fetchProductTypeValues)
+    wiredProductTypeNames({ data, error }) {
+        if (data) {
+            this.productTypeOptions = Array.from(
+                new Map(data.map(item => [item, item])).values()
+            ).map(name => ({
+                label: name, value: name
+            }));
+        } else if (error) {
+            console.error('Error fetching product names:', error);
+        }
+    }
+
     // Fetch Drawings dynamically with pagination
     fetchDrawingsData() {
         this.isLoading = true;
@@ -87,6 +103,7 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
             itemFamily: this.selectedItemFamily || '',
             itemCategory: this.selectedItemCategory || '',
             recommendedApplicationType: this.selectedRecommendedApplicationType || '',
+            productType: this.selectedProductType || '',
             pageNumber: this.pageNumber,
             pageSize: this.pageSize
         })
@@ -98,8 +115,8 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
                 advantages: drawing.Advantages__c ? drawing.Advantages__c.split('\n') : []
             }));
 
-           // const totalImages = this.drawings.filter(drawing => drawing.imageUrl).length;
-           // console.log('Total images with Drawing_Image__c after filtering:', totalImages);
+            const totalImages = this.drawings.filter(drawing => drawing.imageUrl).length;
+            console.log('Total images with Drawing_Image__c after filtering:', totalImages);
     
             const totalRecords = data.length;
             this.totalPages = totalRecords > 0 ? Math.ceil(totalRecords / this.pageSize) : 1;
@@ -116,7 +133,7 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     // Load all images initially
     loadImages() {
         this.isLoading = true;
-        fetchDrawings({ itemFamily: '', itemCategory: '', recommendedApplicationType: '', pageNumber: this.pageNumber, pageSize: this.pageSize })
+        fetchDrawings({ itemFamily: '', itemCategory: '', recommendedApplicationType: '', productType: '', pageNumber: this.pageNumber, pageSize: this.pageSize })
             .then(data => {
                 this.drawings = data.map(drawing => ({
                     id: drawing.Id,
@@ -124,8 +141,8 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
                     code: drawing.Code__c,
                     advantages: drawing.Advantages__c ? drawing.Advantages__c.split('\n') : []
                 }));
-                // const totalImages = this.drawings.filter(drawing => drawing.imageUrl).length;
-                // console.log('Total images with Drawing_Image__c:', totalImages);
+                 const totalImages = this.drawings.filter(drawing => drawing.imageUrl).length;
+                 console.log('Total images with Drawing_Image__c:', totalImages);
 
                 const totalRecords = data.length;
                 this.totalPages = totalRecords > 0 ? Math.ceil(totalRecords / this.pageSize) : 1;
@@ -166,6 +183,11 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     handleRecommendedApplicationChange(event) {
         this.selectedRecommendedApplicationType = event.detail.value;
         this.fetchDrawingsData(); // Fetch updated drawings
+    }
+
+    handleproductTypeChange(event) {
+        this.selectedProductType = event.detail.value;
+        this.fetchDrawingsData(); 
     }
 
     // Handle Next Page
