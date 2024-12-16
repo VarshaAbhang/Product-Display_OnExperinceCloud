@@ -39,15 +39,15 @@
             <div class="slds-grid slds-wrap">
                 <template for:each={drawings} for:item="drawing">
                     <template if:true={drawing.imageUrl}>
-                        <div key={drawing.id} class="slds-col slds-size_1-of-3 slds-p-around_small">
+                        <div key={drawing.id} class="slds-col slds-size_1-of-5 slds-p-around_small">
                             <img src={drawing.imageUrl} class="custom-image" 
                                 data-id={drawing.id} 
                                 onclick={handleImageClick}/>
 
                             <div class="slds-text-heading_medium slds-m-top_small">{drawing.code}</div> 
                             <ul class="slds-m-top_x-small">
-                                <template for:each={drawing.features} for:item="feature">
-                                    <li key={feature} class="slds-text-body_regular">{feature}</li>
+                                <template for:each={drawing.advantages} for:item="advantage">
+                                    <li key={advantage} class="slds-text-body_regular">{advantage}</li>
                                 </template>
                             </ul>
                         </div>

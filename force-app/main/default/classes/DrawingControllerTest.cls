@@ -23,7 +23,7 @@
 public class DrawingControllerTest {
     @testSetup
     static void setupTestData() {
-        // Create test User
+       
         Profile standardUserProfile = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1];
 
         User standardUser = new User(
@@ -39,48 +39,46 @@ public class DrawingControllerTest {
         );
         insert standardUser;
 
-        // Fetch valid picklist values for Item_Family__c and Item_Category__c
-        String validItemFamily = 'Mechanical Seal'; // Replace with a valid value from your org
-        String validItemCategory = 'Cartridge Mechanical Seal'; // Replace with a valid value from your org
+       
+        String validItemFamily = 'Mechanical Seal'; 
+        String validItemCategory = 'Cartridge Mechanical Seal';
 
-        // Create test Drawing records
         Drawing__c drawing1 = new Drawing__c(
             Name = 'Drawing 1',
             Code__c = 'SD',
             Public__c = true,
             Item_Family__c = validItemFamily,
-            Item_Category__c = validItemCategory
+            Item_Category__c = validItemCategory,
+            Drawing_Image__c = 'https://example.com/make_image'
         );
         Drawing__c drawing2 = new Drawing__c(
             Name = 'Drawing 2',
             Code__c = 'SD',
             Public__c = true,
-            Item_Family__c = validItemFamily,
-            Item_Category__c = validItemCategory
+            Item_Family__c = validItemFamily,  
+            Item_Category__c = validItemCategory,
+            Drawing_Image__c = 'https://example.com/size_image'
         );
         insert new List<Drawing__c>{drawing1, drawing2};
 
-        // Insert a valid Standard Features record
         Standard_Features__c standardFeature = new Standard_Features__c(
             Name = 'Test Feature', 
             Types__c = 'Recommended Applications' 
         );
         insert standardFeature;
 
-        // Create test Drawing Details records with valid Standard_Features__c reference
+       
         Drawing_Details__c detail1 = new Drawing_Details__c(
             Drawing__c = drawing1.Id, 
             Type__c = 'Recommended Applications', 
-            Standard_Features__c = standardFeature.Id // Make sure Standard_Features__c is properly set
+            Standard_Features__c = standardFeature.Id 
         );
         insert detail1;
     }
 
     static testMethod void testGetCurrentUserProfile() {
-        // Fetch the test user created in @testSetup
         User testUser = [SELECT Id FROM User WHERE Alias = 'stduser' LIMIT 1];
     
-        // Use System.runAs with the fetched user
         System.runAs(testUser) {
             String profileName = DrawingController.getCurrentUserProfile();
             System.assertNotEquals(null, profileName, 'Profile Name should not be null');
@@ -88,7 +86,7 @@ public class DrawingControllerTest {
     }
 
     static testMethod void testFetchDrawings() {
-        List<Drawing__c> results = DrawingController.fetchDrawings('Mechanical Seal', null, null, 1, 18);
+        List<Drawing__c> results = DrawingController.fetchDrawings('Mechanical Seal', 'Cartridge Mechanical Seal', 'Test Feature', 1, 18);
         System.assert(results.size() > 0, 'Expected at least one drawing');
     }
 
@@ -110,8 +108,17 @@ public class DrawingControllerTest {
     }
 
     static testMethod void testFetchRelatedDrawings() {
-        Drawing__c drawing = [SELECT Id FROM Drawing__c LIMIT 1];
+        Drawing__c drawing = [SELECT Id, Item_Family__c, Item_Category__c FROM Drawing__c LIMIT 1];
+        
         List<Drawing__c> relatedDrawings = DrawingController.fetchRelatedDrawings(drawing.Id);
+    
+        System.debug('Related Drawings in Test: ' + relatedDrawings);
+    
         System.assert(relatedDrawings.size() > 0, 'Expected related drawings');
+        
+        System.assert(relatedDrawings[0].Item_Family__c == drawing.Item_Family__c, 'Related drawing should share the same Item_Family__c');
+        System.assert(relatedDrawings[0].Item_Category__c == drawing.Item_Category__c, 'Related drawing should share the same Item_Category__c');
     }
+    
+    
 }

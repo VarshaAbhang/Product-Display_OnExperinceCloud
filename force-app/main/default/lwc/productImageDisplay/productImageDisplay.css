@@ -1,16 +1,19 @@
 .slds-col {
-    flex: 1 1 calc(33.33% - 1rem); 
+    flex: 1 1 calc(20% - 1rem); /* Adjust to fit 5 columns per row */
     margin: 0.5rem; 
     box-sizing: border-box;
 }
 
 .custom-image {
     cursor: pointer;
-    max-width: 200px; 
-    max-height: 200px; 
+    max-width: 100%; /* Ensure image fits within the column width */
+    max-height: 200px; /* Maintain maximum height for the image */
     object-fit: contain; 
     object-position: center;
+    display: block; /* Ensures image is displayed as a block element */
+    margin: 0 auto; /* Centers the image within its container */
 }
+
 
 .slds-text-heading_medium {
     font-size: 1.5rem;

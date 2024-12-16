@@ -22,7 +22,7 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
     @track isLoading = false;
     
     // Pagination state
-    @track pageSize = 18;
+    @track pageSize = 30;
     @track pageNumber = 1;
     @track totalPages = 1;
 
@@ -95,7 +95,7 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
                 id: drawing.Id,
                 imageUrl: drawing.Drawing_Image__c,
                 code: drawing.Code__c,
-                features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+                advantages: drawing.Advantages__c ? drawing.Advantages__c.split('\n') : []
             }));
 
            // const totalImages = this.drawings.filter(drawing => drawing.imageUrl).length;
@@ -122,7 +122,7 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
                     id: drawing.Id,
                     imageUrl: drawing.Drawing_Image__c,
                     code: drawing.Code__c,
-                    features: drawing.Product_Features__c ? drawing.Product_Features__c.split('\n') : []
+                    advantages: drawing.Advantages__c ? drawing.Advantages__c.split('\n') : []
                 }));
                 // const totalImages = this.drawings.filter(drawing => drawing.imageUrl).length;
                 // console.log('Total images with Drawing_Image__c:', totalImages);
