@@ -16,8 +16,13 @@
 
 
 .slds-text-heading_medium {
+    margin-bottom: 10px;
+    display: block;
     font-size: 1.5rem;
+    line-height: 22px;
+    font-family: "Barlow", sans-serif;
     font-weight: bold;
+    color: #002F54;
 }
 
 ul {
@@ -40,4 +45,12 @@ li {
     position: sticky;
     bottom: 0; /* Keeps pagination at the bottom */
     margin-top: 1rem;
+}
+
+/* Target the label of the combobox specifically */
+.bold-label .slds-form-element__label {
+    font-size: 1.5rem !important;       /* Force larger font size */
+    font-family: "Barlow", sans-serif !important; /* Apply the custom font */
+    font-weight: bold !important;       /* Make the label bold */
+    color: #002F54 !important;          /* Apply the custom color */
 }
