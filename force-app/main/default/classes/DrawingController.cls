@@ -60,28 +60,28 @@ public with sharing class DrawingController {
     }
 
     @AuraEnabled (cacheable=true)
-    public static List<String> fetchProductTypeValues() {
-        try {
-            List<Drawing__c> drawingList = [
-                SELECT Code__c 
-                FROM Drawing__c 
-                WHERE Public__c = true
-            ];
+    public static List<String> fetchProductTypeValues(String itemFamily) {
+    try {
+        List<Drawing__c> drawingList = [
+            SELECT Code__c 
+            FROM Drawing__c 
+            WHERE Public__c = true
+            And Item_Family__c = :itemFamily
+        ];
 
-            List<String> drawingListNames = new List<String>();
-            for (Drawing__c Names : drawingList) {
-                if (Names.Code__c != null) {
-                    drawingListNames.add(Names.Code__c);
-                }
+        List<String> drawingListNames = new List<String>();
+        for (Drawing__c Names : drawingList) {
+            if (Names.Code__c != null) {
+                drawingListNames.add(Names.Code__c);
             }
-
-            return drawingListNames;
-        } catch (Exception e) {
-            System.debug('Error fetching product type values: ' + e.getMessage());
-            throw new AuraHandledException('Error fetching Drawing Names');
         }
-    }
 
+        return drawingListNames;
+    } catch (Exception e) {
+        System.debug('Error fetching product type values: ' + e.getMessage());
+        throw new AuraHandledException('Error fetching Drawing Names');
+    }
+}
     
     @AuraEnabled(cacheable=true)
     public static Drawing__c fetchDrawingById(String drawingId) {

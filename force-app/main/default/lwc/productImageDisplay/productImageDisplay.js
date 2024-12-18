@@ -87,14 +87,13 @@ export default class ProductImageDisplay extends NavigationMixin(LightningElemen
         }
     }
 
-    @wire(fetchProductTypeValues)
+    @wire(fetchProductTypeValues, { itemFamily: '$selectedItemFamily' })
     wiredProductTypeNames({ data, error }) {
         if (data) {
-            this.productTypeOptions = Array.from(
-                new Map(data.map(item => [item, item])).values()
-            ).map(name => ({
+            this.productTypeOptions = [{ label: 'Select Names', value: '' }]
+            .concat(Array.from( new Map(data.map(item => [item, item])).values()).map(name => ({
                 label: name, value: name
-            }));
+            })));
         } else if (error) {
             console.error('Error fetching product names:', error);
         }
