@@ -49,14 +49,13 @@
         </div>
     </div>
 
-    <div class="slds-grid slds-wrap slds-p-around_medium">
+    <div class="slds-p-around_medium">
         <!-- Drawings Display -->
         <template if:true={drawings.length}>
-            <div class="slds-grid slds-wrap">
+            <div class="slds-grid ">
                 <template for:each={drawings} for:item="drawing">
                     <template if:true={drawing.imageUrl}>
-                        <div key={drawing.id} 
-                            class="slds-col slds-large-size_1-of-5 slds-p-around_small">
+                        <div key={drawing.id} class="slds-col slds-size_1-of-1 slds-large-size_1-of-5 slds-p-around_small">
                             <img src={drawing.imageUrl} 
                                 class="custom-image" 
                                 data-id={drawing.id} 
@@ -88,4 +87,4 @@
             <div class="slds-text-align_center slds-text-heading_medium">No drawings found...</div>
         </template>
     </div>
-</template>
+</template>    

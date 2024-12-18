@@ -1,9 +1,14 @@
 .slds-col {
-    flex: 1 1 calc(20% - 1rem); 
+    flex: 0 1 calc(20% - 1rem); 
     margin: 0.5rem;
     box-sizing: border-box;
 }
 
+.slds-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
 .custom-image {
     cursor: pointer;
     width: 100%;
