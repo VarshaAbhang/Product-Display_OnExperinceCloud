@@ -1,50 +1,52 @@
 <template>
     <div class="slds-grid slds-wrap slds-p-around_medium">
-        <!-- Item Family Dropdown -->
+
         <div class="slds-col slds-size_1-of-4 slds-p-around_small">
+            <label class="custom-combobox-label slds-form-element__label">Item Family</label>
             <lightning-combobox
                 name="itemFamily"
-                label="Item Family"
                 value={selectedItemFamily}
                 placeholder="Select Item Family"
                 options={itemFamilyOptions}
                 onchange={handleItemFamilyChange}
-                class="bold-label">
+                class="mb">
             </lightning-combobox>
         </div>
+                      
 
-        <!-- Item Category Dropdown -->
         <div class="slds-col slds-size_1-of-4 slds-p-around_small">
+            <label class="custom-combobox-label slds-form-element__label">Item Category</label>
             <lightning-combobox
                 name="itemCategory"
-                label="Item Category"
                 value={selectedItemCategory}
                 placeholder="Select Item Category"
                 options={filteredItemCategoryOptions}
                 onchange={handleItemCategoryChange}
-                class="bold-label">
+                class="mb">
             </lightning-combobox>
-        </div>
+        </div>     
 
-        <!-- Type Dropdown -->
         <div class="slds-col slds-size_1-of-4 slds-p-around_small">
+            <label class="custom-combobox-label slds-form-element__label">Recommended Application</label>
             <lightning-combobox
-                label="Recommended Application"
+                name="recommendedApplication"
                 value={selectedRecommendedApplicationType}
                 placeholder="Select Recommended Application Type"
                 options={recommendedApplicationOptions}
                 onchange={handleRecommendedApplicationChange}
-                class="bold-label">
+                class="mb">
             </lightning-combobox>
         </div>
 
         <div class="slds-col slds-size_1-of-4 slds-p-around_small">
+            <label class="custom-combobox-label slds-form-element__label">Product Name</label>
             <lightning-combobox
-                label="Product Name"
+                name="Product Name"
                 value={selectedProductType}
                 placeholder="Select Product Name"
                 options={productTypeOptions}
-                onchange={handleproductTypeChange}>
+                onchange={handleproductTypeChange}
+                class="mb">
             </lightning-combobox>
         </div>
     </div>
